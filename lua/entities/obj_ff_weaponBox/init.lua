@@ -3,8 +3,12 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
+ENT.RefillableWeapons = {
+    "drc_dmr",
+}
+
 function ENT:Initialize()
-    self:SetModel("models/items/ammocrate_pistol.mdl")
+    self:SetModel("models/hr/unsc/ammo_box/ammo_box.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
@@ -14,11 +18,18 @@ function ENT:Initialize()
     end
 end
 
+local ammoType = nil
+local clipSize = nil
+local giveAmmoCount = nil
 function ENT:Use(activator, caller, useType, value)
-    local ammoType = activator:GetActiveWeapon():GetPrimaryAmmoType()
-    local clipSize = activator:GetActiveWeapon():GetMaxClip1()
-    local giveAmmoCount = (activator:GetActiveWeapon():GetMaxClip1()*4 - activator:GetAmmoCount(ammoType))
-    if (activator:GetAmmoCount(ammoType) < clipSize*4) then
-        activator:GiveAmmo(giveAmmoCount, ammoType)
+    for k, v in pairs(activator:GetWeapons()) do
+        if (table.HasValue(self.RefillableWeapons, v:GetClass())) then
+            ammoType = v:GetPrimaryAmmoType()
+            clipSize = v:GetMaxClip1()
+            if (activator:GetAmmoCount(ammoType) < clipSize*4) then
+                giveAmmoCount = (v:GetMaxClip1()*4 - activator:GetAmmoCount(ammoType))
+                activator:GiveAmmo(giveAmmoCount, ammoType)
+            end
+        end
     end
 end

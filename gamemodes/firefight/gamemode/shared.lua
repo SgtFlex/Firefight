@@ -130,18 +130,38 @@ function StartReinforcement()
 end
 
 
+local ordnancePod = nil
+local startPosition = nil
+local endPosition = nil
+local trace = nil
 
 function OrdananceDrop()
 	if (SERVER) then
 		PrintMessage(3, "Ordnance Drop")
 		local players = ents.FindByClass("player")
 		for i = 1, 2 do
-			local weapon = ents.Create(OrdnanceWeapons[math.random(1, #OrdnanceWeapons)])
-			weapon:SetPos(Vector(0,0,0))
-			weapon:Spawn()
+			ordnancePod = ents.Create("obj_ff_ordnance_pod")
+			startPosition = Vector(math.random(-500, 500), math.random(-500, 500),200)
+			endPosition = startPosition + Vector(math.random(-1000, 1000), math.random(-1000, 1000), 10000)
+			trace = util.TraceLine({
+				start = startPosition,
+				endpos = endPosition,
+			})
+			debugoverlay.Line(startPosition, endPosition, 5, Color(255,255,255))
+			ordnancePod:SetPos(trace.HitPos + trace.HitNormal*200)
+			ordnancePod:SetWeapon(OrdnanceWeapons[math.random(1, #OrdnanceWeapons)])
+			ordnancePod:Spawn()
+			ordnancePod:GetPhysicsObject():SetVelocity((startPosition-endPosition):GetNormalized()*4000)
+			ordnancePod:SetAngles(ordnancePod:GetPhysicsObject():GetVelocity():GetNormalized():Angle() + Angle(-90,0,0))
 		end
 	end
 end
+
+-- function GM:Think()
+-- 	if (CurTime()%5==0) then
+-- 		OrdananceDrop()
+-- 	end
+-- end
 
 function GM:EntityRemoved(ent)
 	if (table.HasValue(AliveReinforcements, ent)) then
