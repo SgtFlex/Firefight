@@ -5,6 +5,10 @@ include("shared.lua")
 
 ENT.RefillableWeapons = {
     "drc_dmr",
+    "drc_m6g_reach",
+    "drc_ma37",
+    "drc_m45",
+    "drc_m139",
 }
 
 function ENT:Initialize()
@@ -27,7 +31,7 @@ function ENT:Use(activator, caller, useType, value)
             ammoType = v:GetPrimaryAmmoType()
             clipSize = v:GetMaxClip1()
             if (activator:GetAmmoCount(ammoType) < clipSize*4) then
-                giveAmmoCount = (v:GetMaxClip1()*4 - activator:GetAmmoCount(ammoType))
+                giveAmmoCount = (v:GetMaxClip1()*4 - activator:GetAmmoCount(ammoType)) + (v:GetMaxClip1()-v:Clip1())
                 activator:GiveAmmo(giveAmmoCount, ammoType)
             end
         end

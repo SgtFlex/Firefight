@@ -33,6 +33,9 @@ local OrdnanceWeapons = {
 	"drc_m139",
 	"drc_m739",
 }
+local StarterWeapons = {
+	"drc_dmr",
+}
 local playerLives = 7
 local startReinfStrength = 10
 local currentReinfStrength = startReinfStrength
@@ -45,7 +48,8 @@ function GM:Initialize()
 end
 
 function GM:PlayerSpawn(player)
-	player:Give("drc_dmr")
+	local startingWeapon = player:Give("drc_dmr")
+	player:GiveAmmo(startingWeapon:GetMaxClip1()*3, startingWeapon:GetPrimaryAmmoType())
 	player:SetWalkSpeed(175)
 	player:SetRunSpeed(300)
 	player:SetGravity(0.5)
@@ -157,12 +161,6 @@ function OrdananceDrop()
 	end
 end
 
--- function GM:Think()
--- 	if (CurTime()%5==0) then
--- 		OrdananceDrop()
--- 	end
--- end
-
 function GM:EntityRemoved(ent)
 	if (table.HasValue(AliveReinforcements, ent)) then
 		table.RemoveByValue(AliveReinforcements, ent)
@@ -187,4 +185,69 @@ function GM:PlayerDeath(victim, inflictor, attacker)
 	if (playerLives < 0) then
 		FinishGame(false)
 	end
+end
+
+function GM:DoPlayerDeath(ply, attacker, dmg)
+	ply:CreateRagdoll()
+	local ammoPouch = ents.Create("obj_ff_ammo_pouch")
+	ammoPouch:SetPos(ply:GetPos() + ply:OBBCenter())
+	ammoPouch:SetAmmo(ply:GetAmmo())
+	ammoPouch:Spawn()
+	ammoPouch:GetPhysicsObject():AddVelocity(Vector(math.random(-50, 50),math.random(-50, 50),math.random(-50, 50)))
+	ammoPouch:GetPhysicsObject():AddAngleVelocity(Vector(math.random(-50, 50),math.random(-50, 50),math.random(-50, 50)))
+	ply:StripAmmo()
+
+	for k,v in pairs(ply:GetWeapons()) do
+		ply:DropWeapon(v)
+	end
+end
+
+-- function GM:PlayerAmmoChanged(ply,ammoID,oldCount,newCount)
+-- 	for k,v in pairs(ply:GetWeapons()) do
+-- 		if (v:GetPrimaryAmmoType()==ammoID) and (newCount > (v:GetMaxClip1()*3)) then
+-- 			ply:SetAmmo(v:GetMaxClip1()*3, ammoID)
+-- 		end
+-- 	end
+-- end
+
+--Don't need players hogging all weapons and ammo to themselves. Limit players to 2 weapons and 4 clips reserve!
+local requestPickup = nil
+function GM:PlayerCanPickupWeapon(ply, wep) 
+	if (ply:HasWeapon(wep:GetClass())) then
+		if ply:GetAmmoCount(wep:GetPrimaryAmmoType()) < wep:GetMaxClip1()*4 then
+			ply:GiveAmmo(wep:Clip1(), wep:GetPrimaryAmmoType())
+			wep:Remove() --essentially returning true
+		end
+	end
+	if (#ply:GetWeapons()<2) then
+		return true --force a gun to be picked up if we're unarmed
+	end
+	if (IsValid(requestPickup) and requestPickup:IsWeapon()) then
+		if (#ply:GetWeapons() >= 2) then
+			local droppedWeapon = ply:GetActiveWeapon()
+			ply:DropWeapon(droppedWeapon)
+			if (ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()) > 0) then
+				local ammoPouch = ents.Create("obj_ff_ammo_pouch")
+				ammoPouch:SetPos(ply:GetPos())
+				ammoPouch:SetAmmo({
+					[droppedWeapon:GetPrimaryAmmoType()] = ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()),
+				})
+				ply:RemoveAmmo(ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()), droppedWeapon:GetPrimaryAmmoType())
+				ammoPouch:Spawn()
+			end
+			timer.Simple(0.2, function()
+				requestPickup = nil --Need a small timer here to prevent auto pickups of the weapon that was just dropped
+			end)
+		end
+		return true
+	end
+	return false
+end
+
+-- function GM:WeaponEquip(weapon, owner)
+-- 	owner:SetActiveWeapon(weapon)
+-- end
+
+function GM:PlayerUse(ply, ent)
+	requestPickup = ent
 end

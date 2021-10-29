@@ -3,22 +3,17 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-ENT.weapon = "drc_spnkr"
-
+ENT.weapon = "arccw_mw2_anaconda"
+ENT.opened = false
+ENT.attachedAmmo = nil
 function ENT:Initialize()
     self:SetModel("models/hr/unsc/ordnance_pod/ordnance_pod.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
-
     if (IsValid(self:GetPhysicsObject())) then
         self:GetPhysicsObject():Wake()
     end
-    local attachedWep = ents.Create(self.weapon)
-    attachedWep:SetPos(self:GetAttachment(1)["Pos"])
-    attachedWep:SetAngles(self:GetAttachment(1)["Ang"])
-    attachedWep:SetParent(self, self:LookupAttachment("gun_spawn"))
-    attachedWep:Spawn()
 
     self.propDoor = ents.Create("prop_physics")
     self.propDoor:SetModel("models/hr/unsc/ordnance_pod_panel/ordnance_pod_panel.mdl")
@@ -35,17 +30,54 @@ function ENT:SetWeapon(weapon)
 end
 
 function ENT:PhysicsCollide(colData, collider)
-    if (colData.Speed > 150) then
+    if (colData.Speed > 150 and self.opened==false) then
+        self:SetPos(colData.HitPos)
         self:EmitSound("weapons/rocket launcher/impact/1.ogg")
         self:SetMoveType(MOVETYPE_NONE)
-        timer.Simple(2, function()
-            local oldPos = self.propDoor:GetPos()
-            self.propDoor:SetParent(nil)
-            self.propDoor:SetPos(oldPos)
-            self.propDoor:GetPhysicsObject():AddVelocity(self:GetForward()*400)
-            self:DeleteOnRemove(self.propDoor)
-            self:EmitSound("weapons/rocket launcher/impact/3.ogg")
-            timer.Simple(300, function() self:Remove() end)
-        end)
+    end
+end
+
+function ENT:OpenPod()
+    self.opened = true
+    local oldPos = self.propDoor:GetPos()
+    self.propDoor:SetParent(nil)
+    self.propDoor:SetPos(oldPos)
+    self.propDoor:GetPhysicsObject():AddVelocity(self:GetForward()*400)
+    self:DeleteOnRemove(self.propDoor)
+    self:EmitSound("weapons/rocket launcher/impact/3.ogg")
+
+    self.attachedWep = ents.Create(self.weapon)
+    self.attachedWep:Spawn()
+    self.attachedWep:SetPos(self:GetAttachment(1)["Pos"]+ self:GetRight()*5)
+    self.attachedWep:SetAngles(self:GetAttachment(1)["Ang"] + Angle(90,0,0))
+    self.attachedWep:SetParent(self)
+    self.attachedWep:GetPhysicsObject():Sleep()
+    self.attachedAmmo = ents.Create("obj_ff_ammo_pouch")
+    self.attachedAmmo:Spawn()
+    self.attachedAmmo:SetPos(self:GetAttachment(1)["Pos"] + self:GetRight()*-5)
+    self.attachedAmmo:SetAngles(self:GetAttachment(1)["Ang"] + Angle(90,0,0))
+    self.attachedAmmo:SetParent(self)
+    self.attachedAmmo:GetPhysicsObject():Sleep()
+    local ammo = {
+        [self.attachedWep:GetPrimaryAmmoType()] = (self.attachedWep:GetMaxClip1()*3),
+    }
+    self.attachedAmmo:SetAmmo(ammo)
+
+    constraint.NoCollide(self.attachedWep, self)
+    constraint.NoCollide(self, self.attachedWep)
+    constraint.NoCollide(self.attachedAmmo, self)
+    constraint.NoCollide(self, self.attachedAmmo)
+end
+
+ENT.checkTime = CurTime()
+function ENT:Think()
+    if (self.opened==false and self.checkTime + 0.5 < CurTime()) then
+        self.checkTime = CurTime()
+        for k, v in pairs(ents.FindInSphere(self:GetPos(), 200)) do
+            if (v:IsPlayer()) then
+                self:OpenPod()
+                return
+            end
+        end
     end
 end
