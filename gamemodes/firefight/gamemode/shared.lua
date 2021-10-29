@@ -189,17 +189,19 @@ end
 
 function GM:DoPlayerDeath(ply, attacker, dmg)
 	ply:CreateRagdoll()
-	local ammoPouch = ents.Create("obj_ff_ammo_pouch")
-	ammoPouch:SetPos(ply:GetPos() + ply:OBBCenter())
-	ammoPouch:SetAmmo(ply:GetAmmo())
-	ammoPouch:Spawn()
-	ammoPouch:GetPhysicsObject():AddVelocity(Vector(math.random(-50, 50),math.random(-50, 50),math.random(-50, 50)))
-	ammoPouch:GetPhysicsObject():AddAngleVelocity(Vector(math.random(-50, 50),math.random(-50, 50),math.random(-50, 50)))
-	ply:StripAmmo()
+	
 
 	for k,v in pairs(ply:GetWeapons()) do
 		ply:DropWeapon(v)
+		local ammoPouch = ents.Create("obj_ff_ammo_pouch")
+		ammoPouch:SetPos(ply:GetPos() + ply:OBBCenter())
+		ammoPouch:SetAmmo(ply:GetAmmoCount(v:GetPrimaryAmmoType()), v:GetPrimaryAmmoType())
+		ammoPouch:Spawn()
+		ammoPouch:GetPhysicsObject():AddVelocity(Vector(math.random(-50, 50),math.random(-50, 50),math.random(-50, 50)))
+		ammoPouch:GetPhysicsObject():AddAngleVelocity(Vector(math.random(-50, 50),math.random(-50, 50),math.random(-50, 50)))
+		ply:RemoveAmmo(ply:GetAmmoCount(v:GetPrimaryAmmoType()), v:GetPrimaryAmmoType())
 	end
+	ply:StripAmmo()
 end
 
 -- function GM:PlayerAmmoChanged(ply,ammoID,oldCount,newCount)
@@ -225,13 +227,13 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 	if (IsValid(requestPickup) and requestPickup:IsWeapon()) then
 		if (#ply:GetWeapons() >= 2) then
 			local droppedWeapon = ply:GetActiveWeapon()
+			--Set the dropped weapon's reserve ammo
+			droppedWeapon.ReserveAmmo = ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType())
 			ply:DropWeapon(droppedWeapon)
 			if (ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()) > 0) then
 				local ammoPouch = ents.Create("obj_ff_ammo_pouch")
 				ammoPouch:SetPos(ply:GetPos())
-				ammoPouch:SetAmmo({
-					[droppedWeapon:GetPrimaryAmmoType()] = ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()),
-				})
+				ammoPouch:SetAmmo(droppedWeapon:GetPrimaryAmmoType(), ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()))
 				ply:RemoveAmmo(ply:GetAmmoCount(droppedWeapon:GetPrimaryAmmoType()), droppedWeapon:GetPrimaryAmmoType())
 				ammoPouch:Spawn()
 			end
@@ -244,9 +246,12 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 	return false
 end
 
--- function GM:WeaponEquip(weapon, owner)
--- 	owner:SetActiveWeapon(weapon)
--- end
+function GM:WeaponEquip(weapon, owner)
+	if (weapon.ReserveAmmo) then
+		PrintMessage(3, "hi")
+		activator:GiveAmmo(weapon.ReserveAmmo, weapon:GetPrimaryAmmoType())
+	end
+end
 
 function GM:PlayerUse(ply, ent)
 	requestPickup = ent
