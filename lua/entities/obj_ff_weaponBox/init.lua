@@ -30,8 +30,8 @@ function ENT:Use(activator, caller, useType, value)
         if (table.HasValue(self.RefillableWeapons, v:GetClass())) then
             ammoType = v:GetPrimaryAmmoType()
             clipSize = v:GetMaxClip1()
-            if (activator:GetAmmoCount(ammoType) < clipSize*4) then
-                giveAmmoCount = (v:GetMaxClip1()*4 - activator:GetAmmoCount(ammoType)) + (v:GetMaxClip1()-v:Clip1())
+            if ((activator:GetAmmoCount(ammoType) + v:Clip1()) < clipSize*4) then
+                giveAmmoCount = (v:GetMaxClip1()*4) - (activator:GetAmmoCount(ammoType) + v:Clip1())
                 activator:GiveAmmo(giveAmmoCount, ammoType)
             end
         end

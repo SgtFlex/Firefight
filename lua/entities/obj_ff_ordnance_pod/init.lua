@@ -3,7 +3,15 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-ENT.weapon = "arccw_mw2_anaconda"
+ENT.Weapons = {
+    "drc_srs99am",
+    "drc_spnkr",
+    "drc_m45",
+    "drc_splaser",
+    "drc_m139",
+    "drc_m739",
+}
+
 ENT.opened = false
 ENT.attachedAmmo = nil
 ENT.trailSound = nil
@@ -23,6 +31,7 @@ function ENT:Initialize()
     self.propDoor:SetParent(self)
     self.propDoor:SetPos(self:GetPos())
     self.propDoor:SetAngles(self:GetAngles())
+    self.propDoor:SetCollisionGroup(2)
     self.propDoor:Spawn()
     constraint.NoCollide(self.propDoor, self)
     constraint.NoCollide(self, self.propDoor)
@@ -48,13 +57,14 @@ function ENT:Initialize()
     self.spriteLight:Activate()
 end
 
-function ENT:SetWeapon(weapon)
-    self.weapon = weapon
+function ENT:SetWeapons(weapons)
+    self.Weapons = weapons
 end
 
 function ENT:PhysicsCollide(colData, collider)
     if (colData.Speed > 150 and self.opened==false) then
         ParticleEffect("vj_explosion2", self:GetPos(), Angle(0,0,0))
+        util.ScreenShake(self:GetPos(), 1000, 1000, 1, 500)
         self.trailSound:Stop()
         self:SetPos(colData.HitPos)
         self:EmitSound("weapons/rocket launcher/impact/1.ogg")
@@ -71,28 +81,16 @@ function ENT:OpenPod()
     self:DeleteOnRemove(self.propDoor)
     self:EmitSound("weapons/rocket launcher/impact/3.ogg")
 
-    self.attachedWep = ents.Create(self.weapon)
+    self.attachedWep = ents.Create(self.Weapons[math.random(1, #self.Weapons)])
     self.attachedWep:Spawn()
-    self.attachedWep:SetPos(self:GetAttachment(1)["Pos"]+ self:GetRight()*9)
+    self.attachedWep:SetPos(self:GetAttachment(1)["Pos"])
     self.attachedWep:SetAngles(self:GetAttachment(1)["Ang"] + Angle(90,0,0))
     self.attachedWep:SetParent(self)
     self.attachedWep:GetPhysicsObject():Sleep()
-    self.attachedAmmo = ents.Create("obj_ff_ammo_pouch")
-    local ammo = {
-        [self.attachedWep:GetPrimaryAmmoType()] = (self.attachedWep:GetMaxClip1()*3),
-    }
-    self.attachedAmmo:SetAmmo(ammo)
-    self.attachedAmmo:Spawn()
-    self.attachedAmmo:SetPos(self:GetAttachment(1)["Pos"] + self:GetRight()*-9 + self:GetForward()*2)
-    self.attachedAmmo:SetAngles(self:GetAttachment(1)["Ang"] + Angle(0,0,0))
-    self.attachedAmmo:SetParent(self)
-    self.attachedAmmo:GetPhysicsObject():Sleep()
+    self.attachedWep.ReserveAmmo = self.attachedWep:GetMaxClip1()*2
     
-
     constraint.NoCollide(self.attachedWep, self)
     constraint.NoCollide(self, self.attachedWep)
-    constraint.NoCollide(self.attachedAmmo, self)
-    constraint.NoCollide(self, self.attachedAmmo)
 end
 
 ENT.checkTime = CurTime()
