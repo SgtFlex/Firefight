@@ -7,20 +7,45 @@ local maxSets = 3
 local currentSet = 0
 local maxReinforcements = 3
 local currentReinforcement = 0
-local allNPCs = {
-	{Unit = "npc_vj_halo_cov_spv3_grunt_min", Cost = 1},
-	{Unit = "npc_vj_halo_cov_spv3_grunt_maj", Cost = 2},
-	{Unit = "npc_vj_halo_cov_spv3_grunt_spc", Cost = 4},
-	{Unit = "npc_vj_halo_cov_spv3_grunt_ult", Cost = 6},
+local minSpawnRadius = 1000
+local maxSpawnRadius = 1500
+local ArmoryPos = nil
 
+local EnemySpawn_Tbl = {
+	FodderInfo = {
+		Bank = 6,
+		BankReinfMult = 1.2,
+		NPCs = {
+			{NPC = "npc_vj_halo_cov_spv3_grunt_min", Cost = 1},
+			{NPC = "npc_vj_halo_cov_spv3_grunt_maj", Cost = 2},
+			{NPC = "npc_vj_halo_cov_spv3_grunt_spc", Cost = 4},
+			{NPC = "npc_vj_halo_cov_spv3_grunt_ult", Cost = 5},
+		}
+	},
+	Fodder2Info = {
+		Bank = 3,
+		BankReinfMult = 1.3,
+		NPCs = {
+			{NPC = "npc_vj_halo_cov_spv3_jackal_min", Cost = 1},
+			{NPC = "npc_vj_halo_cov_spv3_jackal_maj", Cost = 3},
+			{NPC = "npc_vj_halo_cov_spv3_jackal_spc", Cost = 5},
+		}
+	},
+	EliteInfo = {
+		Bank = 3,
+		BankReinfMult = 1.4,
+		NPCs = {
+			{NPC = "npc_vj_halo_cov_spv3_elite_min", Cost = 1},
+			{NPC = "npc_vj_halo_cov_spv3_brute_min", Cost = 1},
+			{NPC = "npc_vj_halo_cov_spv3_elite_maj", Cost = 2},
+			{NPC = "npc_vj_halo_cov_spv3_brute_maj", Cost = 2},
+		}
+	},
 }
-local Reinforcements = {
-	"npc_vj_halo_cov_spv3_grunt_min",
-	"npc_vj_halo_cov_spv3_grunt_min",
-	"npc_vj_halo_cov_spv3_grunt_min",
-	"npc_vj_halo_cov_spv3_grunt_min",
-	"npc_vj_halo_cov_spv3_grunt_maj",
-}
+local StartingBanks = {}
+
+
+local StartReinforcements = {}
 local AliveReinforcements = {}
 local StartedReinforcement = false
 local allHealthPacks = {}
@@ -57,16 +82,36 @@ function GM:PlayerSpawn(player)
 	player:SetMaxHealth(100)
 	player:SetupHands()
 end
+local ExposedSpots = {}
+local HidingSpots = {}
+local SpawnSpots = {}
 
 function StartGame()
 	if SERVER then
+		if (ArmoryPos==nil) then
+			ArmoryPos = player.GetAll()[1]:GetPos() + Vector(100, 0, 0)
+		end
+		for k, v in pairs(navmesh.GetAllNavAreas()) do
+			for i, j in pairs(v:GetExposedSpots()) do
+				table.insert(ExposedSpots, j)
+			end
+			for i,j in pairs(v:GetHidingSpots()) do
+				-- if (!j:IsClosed() and !j:IsUnderwater()) then
+					table.insert(HidingSpots, j)
+				-- end
+			end
+		end
+		
+		for i=1, #EnemySpawn_Tbl do
+			StartingBanks[k] = EnemySpawn_Tbl[k]["Bank"]
+		end
 		PrintMessage(3, "Starting game")
 		local weaponBox = ents.Create("obj_ff_weaponBox")
-		weaponBox:SetPos(Vector(0,0,0))
+		weaponBox:SetPos(ArmoryPos)
 		weaponBox:Spawn()
 		for i = 1, 4 do
 			local healthPack = ents.Create("obj_ff_healthPack")
-			healthPack:SetPos(Vector(math.random(-50, 50), math.random(-50, 50), 0))
+			healthPack:SetPos(Vector(math.random(-50, 50), math.random(-50, 50), 0) + ArmoryPos)
 			healthPack:Spawn()
 			table.insert(allHealthPacks, healthPack)
 		end
@@ -77,6 +122,8 @@ end
 
 function StartSet()
 	if SERVER then
+		PrintTable(ExposedSpots)
+		
 		if (currentSet >= maxSets) then
 			FinishGame(true)
 			return
@@ -99,6 +146,9 @@ function StartSet()
 end
 
 function EndSet()
+	for i=1, #EnemySpawn_Tbl do
+		EnemySpawn_Tbl[k]["Bank"] = StartingBanks[k]
+	end
 	setStarted = false	
 	PrintMessage(3, "Set Completed")
 	timer.Simple(10, function() 
@@ -107,7 +157,8 @@ function EndSet()
 end
 
 
-
+local bank = nil
+local maxCost = 1
 function StartReinforcement()
 	if SERVER then
 		if (setStarted == false) then return end
@@ -118,19 +169,64 @@ function StartReinforcement()
 		currentReinforcement = currentReinforcement + 1
 		PrintMessage(3, "Reinforcements. Wave: "..currentReinforcement)
 		StartedReinforcement = true
+		for i=1, 8 do
+			table.insert(SpawnSpots, GetSpawnablePosition())
+		end
 		timer.Simple(5, function()
-			for k, v in pairs(Reinforcements) do
-				local npc = ents.Create(v)
-				npc:SetPos(Vector(math.random(-100, 100), math.random(-100, 100), 0))
-				npc:Spawn()
-				local weaponTable = list.Get("NPC")[npc:GetClass()].Weapons
-				npc:Give(weaponTable[math.random(1, #weaponTable)])
-				npc:SetCollisionGroup(3)
-				table.insert(AliveReinforcements, npc)
+			StartReinforcements = {}
+			for k, v in pairs(EnemySpawn_Tbl) do
+				bank = v["Bank"]
+				while (bank >= v["NPCs"][1]["Cost"]) do --Spawn as long as our bank is bigger than the smallest unit cost
+					local chosenNPC = v["NPCs"][math.random(1, #v["NPCs"])]
+					while chosenNPC["Cost"] > maxCost do --deplete the bank as much as we can
+						chosenNPC = v["NPCs"][math.random(1, #v["NPCs"])]
+					end
+					local npc = ents.Create(chosenNPC["NPC"])
+					
+
+					npc:SetPos(GetSpawnablePosition())
+					npc:Spawn()
+					local weaponTable = list.Get("NPC")[npc:GetClass()].Weapons
+					npc:Give(weaponTable[math.random(1, #weaponTable)])
+					npc:SetCollisionGroup(3)
+					table.insert(StartReinforcements, npc)
+					table.insert(AliveReinforcements, npc)
+					bank = bank - chosenNPC["Cost"]
+				end
+				v["Bank"] = v["Bank"] * v["BankReinfMult"]
 			end
+			maxCost = maxCost + 1
 			StartedReinforcement = false
 		end)
 	end
+end
+
+local validPos = true
+local LosTest
+function GetSpawnablePosition()
+	local position = nil
+	local nearestNavArea
+	repeat
+		validPos = true
+		for k, v in pairs(player.GetAll()) do
+			repeat
+				position = navmesh.GetNearestNavArea(HidingSpots[math.random(1, #HidingSpots)]):GetCenter()
+			until position:Distance(v:GetPos()) < maxSpawnRadius
+			LosTest = util.TraceLine({
+				start = position + Vector(0,0,50),
+				endpos = (v:GetPos() + v:OBBCenter()),
+			})
+			if (LosTest.Hit) then
+				if (IsValid(LosTest.Entity) and LosTest.Entity:GetClass()=="player") then
+					print("find another position")
+					validPos = false
+				end
+			end
+			debugoverlay.Line(position + Vector(0,0,50), v:GetPos() + v:OBBCenter(), 60, Color(255, 255, 255))
+		end
+	until (validPos==true)
+
+	return position
 end
 
 
@@ -145,7 +241,7 @@ function OrdananceDrop()
 		local players = ents.FindByClass("player")
 		for i = 1, 2 do
 			ordnancePod = ents.Create("obj_ff_ordnance_pod")
-			startPosition = Vector(math.random(-500, 500), math.random(-500, 500),200)
+			startPosition = ExposedSpots[math.random(1, #ExposedSpots)] + Vector(0,0,100)
 			endPosition = startPosition + Vector(math.random(-1000, 1000), math.random(-1000, 1000), 10000)
 			trace = util.TraceLine({
 				start = startPosition,
@@ -165,7 +261,7 @@ function GM:EntityRemoved(ent)
 	if (table.HasValue(AliveReinforcements, ent)) then
 		table.RemoveByValue(AliveReinforcements, ent)
 	end
-	if (#AliveReinforcements <= (#Reinforcements*0.2) && StartedReinforcement==false) then
+	if (#AliveReinforcements <= (#StartReinforcements*0.2) && StartedReinforcement==false) then
 		StartReinforcement()
 	end
 end

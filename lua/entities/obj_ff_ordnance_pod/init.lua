@@ -64,7 +64,7 @@ end
 function ENT:PhysicsCollide(colData, collider)
     if (colData.Speed > 150 and self.opened==false) then
         ParticleEffect("vj_explosion2", self:GetPos(), Angle(0,0,0))
-        util.ScreenShake(self:GetPos(), 1000, 1000, 1, 500)
+        util.ScreenShake(self:GetPos(), 1000, 1000, 2, 1500)
         self.trailSound:Stop()
         self:SetPos(colData.HitPos)
         self:EmitSound("weapons/rocket launcher/impact/1.ogg")
@@ -74,6 +74,7 @@ end
 
 function ENT:OpenPod()
     self.opened = true
+    util.ScreenShake(self:GetPos(), 500, 500, 0.5, 500)
     local oldPos = self.propDoor:GetPos()
     self.propDoor:SetParent(nil)
     self.propDoor:SetPos(oldPos)
@@ -88,7 +89,7 @@ function ENT:OpenPod()
     self.attachedWep:SetParent(self)
     self.attachedWep:GetPhysicsObject():Sleep()
     self.attachedWep.ReserveAmmo = self.attachedWep:GetMaxClip1()*2
-    
+    util.PrecacheModel(self.attachedWep:GetModel())
     constraint.NoCollide(self.attachedWep, self)
     constraint.NoCollide(self, self.attachedWep)
 end
