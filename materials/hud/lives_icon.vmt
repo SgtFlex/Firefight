@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "hud/lives_icon"
+	"$translucent" 1
+}
