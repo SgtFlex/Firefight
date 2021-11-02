@@ -99,7 +99,7 @@ end)
 
 local livesIcon = Material("hud/lives_icon")
 hook.Add("HUDPaint", "DrawLives", function()
-    if (livesLeft==nil) then return end
+    if (livesLeft==nil) then livesLeft = -1 return end
     surface.SetFont("ChatFont")
     surface.SetTextPos( ScrW()*.89, ScrH()*.915 ) 
     surface.SetTextColor(0, 200, 255)
@@ -115,19 +115,76 @@ hook.Add("HUDPaint", "DrawLives", function()
 end)
 
 hook.Add("HUDPaint", "DrawReinforcement", function()
-    if (curReinf==nil or maxReinf==nil) then return end
+    if (curReinf==nil or maxReinf==nil) then curReinf = -1 maxReinf = -1 return end
     surface.SetFont("ChatFont")
     surface.SetTextPos( ScrW()*.9, ScrH()*.915 ) 
     surface.SetTextColor(0, 200, 255)
-    surface.DrawText("Reinforcement: "..curReinf.."/"..maxReinf)
+    surface.DrawText("Wave: "..curReinf.."/"..maxReinf)
 end)
 
 hook.Add("HUDPaint", "DrawSet", function()
-    if (curSet==nil or maxSet==nil) then return end
+    if (curSet==nil or maxSet==nil) then maxSet = -1 curSet = -1 return end
     surface.SetFont("ChatFont")
     surface.SetTextPos( ScrW()*.9, ScrH()*.93 ) 
     surface.SetTextColor(0, 200, 255)
     surface.DrawText("Set: "..curSet.."/"..maxSet)
+end)
+
+hook.Add("HUDPaint", "DrawMapName", function()
+    if (curSet==nil or maxSet==nil) then maxSet = -1 curSet = -1 return end
+    surface.SetFont("ChatFont")
+    surface.SetTextPos( ScrW()*.1, ScrH()*.93 ) 
+    surface.SetTextColor(0, 200, 255)
+    surface.DrawText(game.GetMap())
+end)
+
+local columnMax = 10
+local rowMax = 3
+local rowBreak = 15
+local heldWeapon = nil
+local secondWeapon = nil
+local bulletMat = Material("hud/bullet_icon")
+local primWepMat = Material((ply:GetActiveWeapon().WepSelectIcon))
+local secondWepMat = Material((ply:GetPreviousWeapon().WepSelectIcon)) --Need to find the hooks that allow us to change this
+local bulletSize = {x = 8, y = 16}
+local bulletSpacing = 5
+hook.Add("HUDPaint", "DrawAmmo", function()
+    if (ply:GetActiveWeapon()==nil) then return end
+    
+    
+    
+    surface.SetMaterial(bulletMat)
+    
+    surface.SetDrawColor(0, 0, 0, 150)
+    for col = 1, ply:GetActiveWeapon():GetMaxClip1()/2 do
+        --Draw the outline
+        for row = 1, 2 do
+            surface.DrawTexturedRect(ScrW()*.75 + col*(bulletSpacing+bulletSize.x), ScrH()*.125 + row*(bulletSpacing+bulletSize.y), bulletSize.x, bulletSize.y)
+        end
+    end
+
+    surface.SetDrawColor(0, 255, 255, 150)
+    for i = 1, ply:GetActiveWeapon():Clip1() do
+        --Draw the fill
+        surface.DrawTexturedRect(ScrW()*.75 + i*(bulletSpacing+bulletSize.x), ScrH()*.125 + 1*25, bulletSize.x, bulletSize.y)
+    end
+    surface.SetDrawColor(0, 255, 255, 200)
+    --Draw primary weapon info
+    surface.SetFont("ChatFont")
+    surface.SetTextPos( ScrW()*.9, ScrH()*.07 ) 
+    surface.SetTextColor(0, 200, 255)
+    surface.DrawText(ply:GetAmmoCount(ply:GetActiveWeapon():GetPrimaryAmmoType()))
+    surface.SetMaterial(primWepMat)
+    surface.DrawTexturedRect(ScrW()*.8, ScrH()*0, 300, 300)
+    --ply:GetActiveWeapon():DrawWeaponSelection(ScrW()*.85, ScrH()*.01, 200, 200, 255)
+    --Draw secondary weapon info
+    surface.SetFont("ChatFont")
+    surface.SetTextPos( ScrW()*.935, ScrH()*.03 ) 
+    surface.SetTextColor(0, 200, 255)
+    surface.DrawText(ply:GetAmmoCount(ply:GetPreviousWeapon():GetPrimaryAmmoType()))
+    surface.SetMaterial(secondWepMat)
+    surface.DrawTexturedRect(ScrW()*.875, ScrH()*0, 150, 150)
+    
 end)
 
 function AddToDisplayList(ent, displayName, icon, textColor)
