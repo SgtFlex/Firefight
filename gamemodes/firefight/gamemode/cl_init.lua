@@ -1,17 +1,15 @@
 include( "shared.lua" )
-local ourMat = Material( "hud/hud_marker" )
-local markedEnts = {
-}
-local ply = LocalPlayer()
-local curSet = nil
-local maxSet = nil
-local curReinf = nil
-local maxReinf = nil
-local livesLeft = nil
+include ("hud/cl_infopanel.lua")
+include ("hud/cl_healthbar.lua")
+include ("hud/cl_ammopanel.lua")
 
-hook.Add("InitPostEntity", "PlayerLoaded", function()
-    ply = LocalPlayer()
-end)
+local ourMat = Material( "hud/hud_marker" )
+local markedEnts = {}
+local ply = LocalPlayer()
+
+
+--Panels are CONTAINERS for surface/draw elements, so we should be incorporating that instead of using
+--random coordinates all over the screen hoping everything lines up (which it won't on different resolutions)
 
 hook.Add("HUDPaint", "DrawHUDMarkers", function()
     for k, v in ipairs( markedEnts ) do
@@ -44,90 +42,6 @@ hook.Add("HUDPaint", "DrawHUDMarkers", function()
         surface.SetDrawColor( 255, 255, 255, 255 )
         surface.DrawTexturedRect( data2D.x, data2D.y, 48, 48 ) -- Actually draw the rectangle
     end
-    
-end)
-
-local hOMat = Material( "hud/healthBar_outline" )
-local hFMat = Material( "hud/healthBar_fill" )
-local hSize = {x = 500, y = 400}
-local barPos = {x = ScrW()/2, y = 0}
-hook.Add("HUDPaint", "DrawHealthBar", function()
-    if (ply==nil) then return end
-    --Draw the fill
-    local healthPerc = (ply:Health()/ply:GetMaxHealth())*0.7 --This doesn't seem to work unless we have 0.7 or lower... why?
-    surface.SetDrawColor( 255, 255, 255, 255 )
-    surface.SetAlphaMultiplier(0.75)
-    surface.SetMaterial(hFMat) -- Use our cached material
-    surface.DrawTexturedRectUV( barPos.x, barPos.y, hSize.x*(healthPerc), hSize.y, 0, 0, 1*(healthPerc), 1 )
-    surface.DrawTexturedRectUV( barPos.x - hSize.x*(healthPerc), barPos.y, hSize.x*(healthPerc), hSize.y, healthPerc, 0, 0, 1 )
-    --Draw the outline
-    surface.SetMaterial(hOMat) -- Use our cached material
-    surface.DrawTexturedRectUV( barPos.x, barPos.y, hSize.x, hSize.y, 0, 0, 1, 1 )
-    surface.DrawTexturedRectUV( barPos.x - hSize.x, barPos.y, hSize.x, hSize.y, 1, 0, 0, 1 )
-end)
-
-local sOMat = Material( "hud/shieldBar_outline" )
-local sFMat = Material( "hud/shieldBar_fill" )
-hook.Add("HUDPaint", "DrawShieldBar", function()
-    if (ply==nil) then return end
-    --Draw the fill
-    local shieldPerc = ply:Armor()/ply:GetMaxArmor()
-    surface.SetDrawColor( 255, 255, 255, 255 )
-    surface.SetAlphaMultiplier(0.75)
-    surface.SetMaterial(sFMat) -- Use our cached material
-    surface.DrawTexturedRectUV( barPos.x, barPos.y, hSize.x*(shieldPerc), hSize.y, 0, 0, 1*(shieldPerc), 1 )
-    surface.DrawTexturedRectUV( barPos.x - hSize.x*(shieldPerc), barPos.y, hSize.x*(shieldPerc), hSize.y, shieldPerc, 0, 0, 1 )
-    --Draw the outline
-    surface.SetMaterial(sOMat) -- Use our cached material
-    surface.DrawTexturedRectUV( barPos.x, barPos.y, hSize.x, hSize.y, 0, 0, 1, 1 )
-    surface.DrawTexturedRectUV( barPos.x - hSize.x, barPos.y, hSize.x, hSize.y, 1, 0, 0, 1 )
-end)
-
-hook.Add("HUDPaint", "DrawTime", function()
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.957, ScrH()*.885 ) 
-    surface.SetTextColor(0, 200, 255)
-    surface.DrawText(math.floor((CurTime()/60))..":"..(math.floor(CurTime())%60))
-end)
-
-hook.Add("HUDPaint", "DrawGamemodeName", function()
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.9, ScrH()*.9 ) 
-    surface.SetTextColor(0, 200, 255)
-    surface.DrawText("FIREFIGHT CLASSIC")
-end)
-
-local livesIcon = Material("hud/lives_icon")
-hook.Add("HUDPaint", "DrawLives", function()
-    if (livesLeft==nil) then livesLeft = -1 return end
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.89, ScrH()*.915 ) 
-    surface.SetTextColor(0, 200, 255)
-    if livesLeft==-1 then
-        surface.DrawText("∞")
-    else
-        surface.DrawText(livesLeft)
-    end
-    surface.SetDrawColor(255, 255, 255, 255)
-    surface.SetMaterial(livesIcon)
-    surface.DrawTexturedRect(ScrW()*.89, ScrH()*.93, 12, 24)
-    surface.DrawLine( ScrW()*.897, ScrH()*.9, ScrW()*.897, ScrH()*.95 )
-end)
-
-hook.Add("HUDPaint", "DrawReinforcement", function()
-    if (curReinf==nil or maxReinf==nil) then curReinf = -1 maxReinf = -1 return end
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.9, ScrH()*.915 ) 
-    surface.SetTextColor(0, 200, 255)
-    surface.DrawText("Wave: "..curReinf.."/"..maxReinf)
-end)
-
-hook.Add("HUDPaint", "DrawSet", function()
-    if (curSet==nil or maxSet==nil) then maxSet = -1 curSet = -1 return end
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.9, ScrH()*.93 ) 
-    surface.SetTextColor(0, 200, 255)
-    surface.DrawText("Set: "..curSet.."/"..maxSet)
 end)
 
 hook.Add("HUDPaint", "DrawMapName", function()
@@ -138,54 +52,18 @@ hook.Add("HUDPaint", "DrawMapName", function()
     surface.DrawText(game.GetMap())
 end)
 
-local columnMax = 10
-local rowMax = 3
-local rowBreak = 15
-local heldWeapon = nil
-local secondWeapon = nil
-local bulletMat = Material("hud/bullet_icon")
-local primWepMat = Material((ply:GetActiveWeapon().WepSelectIcon))
-local secondWepMat = Material((ply:GetPreviousWeapon().WepSelectIcon)) --Need to find the hooks that allow us to change this
-local bulletSize = {x = 8, y = 16}
-local bulletSpacing = 5
-hook.Add("HUDPaint", "DrawAmmo", function()
-    if (ply:GetActiveWeapon()==nil) then return end
-    
-    
-    
-    surface.SetMaterial(bulletMat)
-    
-    surface.SetDrawColor(0, 0, 0, 150)
-    for col = 1, ply:GetActiveWeapon():GetMaxClip1()/2 do
-        --Draw the outline
-        for row = 1, 2 do
-            surface.DrawTexturedRect(ScrW()*.75 + col*(bulletSpacing+bulletSize.x), ScrH()*.125 + row*(bulletSpacing+bulletSize.y), bulletSize.x, bulletSize.y)
-        end
+function GetLowestDivisor(number)
+    if (number%2==0) then
+        return 2
     end
 
-    surface.SetDrawColor(0, 255, 255, 150)
-    for i = 1, ply:GetActiveWeapon():Clip1() do
-        --Draw the fill
-        surface.DrawTexturedRect(ScrW()*.75 + i*(bulletSpacing+bulletSize.x), ScrH()*.125 + 1*25, bulletSize.x, bulletSize.y)
+    for i=3,  math.sqrt(number) do
+        if (number%i==0) then
+            return i
+        end
     end
-    surface.SetDrawColor(0, 255, 255, 200)
-    --Draw primary weapon info
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.9, ScrH()*.07 ) 
-    surface.SetTextColor(0, 200, 255)
-    surface.DrawText(ply:GetAmmoCount(ply:GetActiveWeapon():GetPrimaryAmmoType()))
-    surface.SetMaterial(primWepMat)
-    surface.DrawTexturedRect(ScrW()*.8, ScrH()*0, 300, 300)
-    --ply:GetActiveWeapon():DrawWeaponSelection(ScrW()*.85, ScrH()*.01, 200, 200, 255)
-    --Draw secondary weapon info
-    surface.SetFont("ChatFont")
-    surface.SetTextPos( ScrW()*.935, ScrH()*.03 ) 
-    surface.SetTextColor(0, 200, 255)
-    surface.DrawText(ply:GetAmmoCount(ply:GetPreviousWeapon():GetPrimaryAmmoType()))
-    surface.SetMaterial(secondWepMat)
-    surface.DrawTexturedRect(ScrW()*.875, ScrH()*0, 150, 150)
-    
-end)
+    return number
+end
 
 function AddToDisplayList(ent, displayName, icon, textColor)
     print(tostring(ent))
@@ -229,20 +107,28 @@ net.Receive("DisplayListRemove", function()
     RemoveFromDisplayList(net.ReadEntity())
 end)
 
-net.Receive("UpdateReinforcements", function()
-    curReinf = net.ReadInt(10)
+
+
+
+
+--useful hooks to use
+--PlayerAmmoChanged
+
+
+hook.Add("InitPostEntity", "PlayerLoaded", function()
+    ply = LocalPlayer()
+    infoPanel = vgui.Create( "FirefightInfoPanel", parentpanel )
+    healthPanel = vgui.Create("HealthPanel", parentpanel)
+    ammoPanel = vgui.Create("AmmoPanel", parentpanel)
 end)
 
-net.Receive("UpdateSet", function()
-    curSet = net.ReadInt(10)
-end)
-
-net.Receive("GameInfo", function()
-    maxReinf = net.ReadInt(10)
-    maxSet = net.ReadInt(10)
-    livesLeft = net.ReadInt(8)
-end)
-
-net.Receive("UpdateLives", function()
-    livesLeft = net.ReadInt(8)
+hook.Add("OnReloaded", "HotReloaded", function()
+    if (infoPanel) then infoPanel:Remove() end
+    if (healthPanel) then healthPanel:Remove() end
+    if (ammoPanel) then ammoPanel:Remove() end
+    ply = LocalPlayer()
+    infoPanel = vgui.Create( "FirefightInfoPanel", parentpanel )
+    healthPanel = vgui.Create("HealthPanel", parentpanel)
+    ammoPanel = vgui.Create("AmmoPanel", parentpanel)
+    print("HUD hot reloaded")
 end)
