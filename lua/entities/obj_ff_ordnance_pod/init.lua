@@ -89,10 +89,11 @@ function ENT:OpenPod()
     self.attachedWep:SetParent(self)
     self.attachedWep:GetPhysicsObject():Sleep()
     self.attachedWep.ReserveAmmo = self.attachedWep:GetMaxClip1()*2
+    self.attachedWep.Pod = self
     self.attachedWep.Equip = function(self)
         print("Stop tracking us!")
         net.Start("DisplayListRemove")
-        net.WriteEntity(self)
+        net.WriteEntity(self.Pod)
         net.Broadcast()
     end
     util.PrecacheModel(self.attachedWep:GetModel())

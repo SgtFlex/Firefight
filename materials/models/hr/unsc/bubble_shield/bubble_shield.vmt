@@ -1,0 +1,32 @@
+"Refract"
+{
+	$model 1
+	$refractamount 0.05
+	$bluramount 1
+	$refracttint "[0.7 0.9 1]"
+	$normalmap "models/hr/unsc/bubble_shield/bubble_shield_diff"
+	$normalmap2 "models/hr/unsc/bubble_shield/bubble_shield_nrml"
+	$color2 "[0 5 5]"
+	$cvar "[.62 .5]"
+	$svar "[10 5]"
+	$rvar -90
+	$tvar "[0 0]"
+	$nocull 1
+	"Proxies"
+	{
+	"LinearRamp"
+		{
+		"rate"	"-0.3"
+		"initialValue" "0"
+		"resultVar" "$tvar[1]"
+		}
+	"TextureTransform"
+		{
+		centerVar "$cvar"
+		scaleVar "$svar"
+		rotateVar "$rvar"
+		translateVar "$tvar"
+		resultVar "$bumptransform2"
+		}
+	}
+}

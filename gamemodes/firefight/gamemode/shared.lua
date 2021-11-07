@@ -290,7 +290,7 @@ function OrdananceDrop()
 	if (SERVER) then
 		PrintMessage(3, "Ordnance Drop")
 		local players = ents.FindByClass("player")
-		for i = 1, 2 do
+		for i = 1, 3 do
 			ordnancePod = ents.Create("obj_ff_ordnance_pod")
 			startPosition = ExposedSpots[math.random(1, #ExposedSpots)] + Vector(0,0,100)
 			endPosition = startPosition + Vector(math.random(-1000, 1000), math.random(-1000, 1000), 10000)
@@ -435,3 +435,55 @@ end
 function GM:PlayerUse(ply, ent)
 	requestPickup = ent
 end
+
+-- local PrecacheModels = {}
+-- hook.Add("InitPostEntity", "PrecacheModels", function()
+-- 	if (SERVER) then
+-- 		local ent = nil
+-- 		for k,v in pairs(EnemySpawn_Tbl) do
+-- 			for i, j in pairs(v.NPCs) do
+-- 				local ent = ents.Create(j.NPC)
+-- 				for w, x in pairs(ent.Model) do
+-- 					util.PrecacheModel(x)
+-- 					table.insert(PrecacheModels, x)
+-- 					print("precached "..x)
+-- 				end
+-- 				ent:Remove()
+-- 			end
+-- 		end
+-- 		PrintTable(PrecacheModels)
+-- 	end
+-- 	if (CLIENT) then
+-- 		for k,v in pairs(PrecacheModels) do
+-- 			util.PrecacheModel(v)
+-- 			print("Client precached "..v)
+-- 		end
+-- 	end
+-- end)
+
+hook.Add( "PlayerButtonDown", "PlayerButtonDownWikiExample", function( ply, button )
+	if (button==KEY_Q) then
+		print("hi")
+		
+		timer.Create("Fly"..ply:GetCreationID(), 0.1, 0, function()
+			ply:SetVelocity(Vector(0,0,50))
+		end)
+	end
+end)
+
+hook.Add( "PlayerButtonUp", "PlayerButtonDownWikiExample", function( ply, button )
+	if (button==KEY_Q) then
+		timer.Destroy("Fly"..ply:GetCreationID())
+	end
+end)
+
+hook.Add("EntityTakeDamage", "DisplayAllHealthpacks", function(target, dmg)
+	print(tostring(target))
+	if (target:IsPlayer() and target:Health()/target:GetMaxHealth() < 0.5) then
+		for k, v in pairs(allHealthPacks) do
+			net.Start("DisplayListAdd")
+			net.WriteTable({v, "HEALTH", "hud/hud_marker", Color(255, 255, 255)})
+			net.Send(target)
+		end
+	end
+end)

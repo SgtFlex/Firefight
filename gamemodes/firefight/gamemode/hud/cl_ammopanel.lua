@@ -2,15 +2,15 @@
 local AmmoPanel = {}
 local pos = {x = ScrW()*.75, y = ScrH()*.1}
 local size = {w = ScrW()*.15, h = ScrH()*.3}
-local ply = LocalPlayer()
+local ply = nil
 
 
 local columnMax = 10
 local rowMax = 3
 local rowBreak = 15
-local primWep = ply:GetActiveWeapon()
+local primWep = nil
 local primWepMat = nil
-local secWep = ply:GetPreviousWeapon()
+local secWep = nil
 local secWepMat = nil
 local bulletMat = Material("hud/bullet_icon")
 local bulletSize = {x = 10, y = 20}
@@ -18,6 +18,7 @@ local bulletSpacing = 5
 
 
 hook.Add("Think", "MyIdentifier", function()
+    ply = LocalPlayer()
     if (ply:GetActiveWeapon()!=nil and ply:GetActiveWeapon().WepSelectIcon!=nil) then
         primWep = ply:GetActiveWeapon()
         primWepMat = Material(primWep.WepSelectIcon)
@@ -50,30 +51,47 @@ function AmmoPanel:Paint( width, height )
     --draw.RoundedBox( 0, 0, 0, size.w, size.h, Color(0,0,0,50))
 end
 
-function AmmoPanel:DrawBullets()
+local rowMax = 5
+function AmmoPanel:DrawBullets() --Should look into if we can make this more efficient later
     if (!primWep) then return end
     surface.SetMaterial(bulletMat)
+
+    local maxClip = primWep:GetMaxClip1()
+    local cols = GetColumnMax(maxClip)
+    local rows = maxClip/cols
+    local bulLeft = primWep:Clip1()
     
-    local maxRow = 1
-    if (ply:GetActiveWeapon():GetMaxClip1() > 15) then
-        maxRow = GetLowestDivisor(ply:GetActiveWeapon():GetMaxClip1())
+    
+    bulletSize.x = 10*(15/math.min(15, cols))
+    bulletSize.y = 20*(15/math.min(15, cols)) 
+    if (rows > 5) then
+        bulletSize.y = bulletSize.y * (4/rows) --start scaling down the y past 5 rows
     end
-    bulletSize.x = 10*(15/math.min(15, primWep:GetMaxClip1()))
-    bulletSize.y = 20*(15/math.min(15, primWep:GetMaxClip1()))
+    
+    bulletSpacing = 5 * (15/math.min(15, cols))
 
-    --Draw the outline
-    surface.SetDrawColor(0, 0, 0, 150)
-    for col = 1, primWep:GetMaxClip1() do
-        surface.DrawTexturedRect(size.w*0.2 + col*(bulletSpacing+bulletSize.x), size.h*0.5 + 1*25, bulletSize.x, bulletSize.y)
-    end
-    --Draw the fill
+    --Drawing of the bullets
     surface.SetDrawColor(0, 255, 255, 150)
-    for col = 1, primWep:Clip1() do
-        for row = 1, primWep:Clip1() do
-
+    for row = 1, rows do
+        for col = 1, cols do
+            if (bulLeft <= 0) then
+                surface.SetDrawColor(0, 0, 0, 150) --Draw the empty bullets as black silhouttes
+            end
+            bulLeft = bulLeft-1
+            
+            surface.DrawTexturedRect(size.w*0.2 - bulletSize.x + col*(bulletSpacing+bulletSize.x), size.h*0.5 - bulletSize.y + row*(bulletSpacing+bulletSize.y), bulletSize.x, bulletSize.y)
         end
-        surface.DrawTexturedRect(size.w*0.2 + col*(bulletSpacing+bulletSize.x), size.h*0.5 + 1*25, bulletSize.x, bulletSize.y)
     end
+end
+
+local colMax = 15
+function GetColumnMax(number)
+    for k = colMax, 1, -1 do
+        if (number%k==0) then
+            return k
+        end
+    end
+    return colMax
 end
 
 function AmmoPanel:DrawPrimaryInfo()
@@ -81,9 +99,9 @@ function AmmoPanel:DrawPrimaryInfo()
     --Draw primary weapon info
     surface.SetFont("ChatFont")
     surface.SetTextPos( size.w*.65, size.h*.3 ) 
-    surface.SetTextColor(0, 200, 255)
+    surface.SetTextColor(0, 200, 255, 200)
     surface.DrawText(ply:GetAmmoCount(primWep:GetPrimaryAmmoType()))
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(0, 200, 255, 200)
     surface.SetMaterial(primWepMat)
     surface.DrawTexturedRect(size.w*0.2, size.h*0.1, size.w/1.5, size.h/1.5)
 end
@@ -93,8 +111,9 @@ function AmmoPanel:DrawSecondaryInfo()
     --Draw secondary weapon info
     surface.SetFont("ChatFont")
     surface.SetTextPos( size.w*.8, size.h*0.1 ) 
-    surface.SetTextColor(0, 200, 255)
+    surface.SetTextColor(0, 200, 255, 200)
     surface.DrawText(ply:GetAmmoCount(secWep:GetPrimaryAmmoType()))
+    surface.SetDrawColor(0, 200, 255, 200)
     surface.SetMaterial(secWepMat)
     surface.DrawTexturedRect(size.w*0.5, size.h*0.02, size.w/2.5, size.h/3)
 end
