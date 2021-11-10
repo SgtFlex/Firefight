@@ -25,7 +25,7 @@ function ENT:Initialize()
     if (IsValid(self:GetPhysicsObject())) then
         self:GetPhysicsObject():Wake()
     end
-
+    self.startZ = self:GetPos().z
     self.propDoor = ents.Create("prop_physics")
     self.propDoor:SetModel("models/hr/unsc/ordnance_pod_panel/ordnance_pod_panel.mdl")
     self.propDoor:SetParent(self)
@@ -36,7 +36,7 @@ function ENT:Initialize()
     constraint.NoCollide(self.propDoor, self)
     constraint.NoCollide(self, self.propDoor)
     util.SpriteTrail(self, 0, Color(150, 150, 150), true, 30, 0, 1, 50, "trails/smoke")
-    self.trailSound = CreateSound(self, "grenades/plasma nade/trail/trail.wav")
+    self.trailSound = CreateSound(self, "ordnance_pod/rocket_loop.wav")
     self.trailSound:Play()
     self.startPosition = self:GetPos()
     self.trace = util.TraceLine({
@@ -44,6 +44,7 @@ function ENT:Initialize()
         endpos = self:GetPos() + self:GetUp()*-10000,
         filter = self,
     })
+    self.endZ = self.trace.HitPos.z
     self.spriteLight = ents.Create("env_sprite")
     self.spriteLight:SetKeyValue("rendermode", "9")
     self.spriteLight:SetKeyValue("renderamt", "255")
@@ -67,7 +68,7 @@ function ENT:PhysicsCollide(colData, collider)
         util.ScreenShake(self:GetPos(), 1000, 1000, 2, 1500)
         self.trailSound:Stop()
         self:SetPos(colData.HitPos)
-        self:EmitSound("weapons/rocket launcher/impact/1.ogg")
+        self:EmitSound("ordnance_pod/resupply_pod_impact3.wav")
         self:SetMoveType(MOVETYPE_NONE)
     end
 end
@@ -80,7 +81,7 @@ function ENT:OpenPod()
     self.propDoor:SetPos(oldPos)
     self.propDoor:GetPhysicsObject():AddVelocity(self:GetForward()*400)
     self:DeleteOnRemove(self.propDoor)
-    self:EmitSound("weapons/rocket launcher/impact/3.ogg")
+    self:EmitSound("ordnance_pod/human_expl_small2.wav")
 
     self.attachedWep = ents.Create(self.Weapons[math.random(1, #self.Weapons)])
     self.attachedWep:Spawn()
@@ -104,7 +105,8 @@ end
 ENT.checkTime = CurTime()
 function ENT:Think()
     if (self.opened==false and self.checkTime + 0.5 < CurTime()) then
-        self.trailSound:ChangePitch(155 + ((self.startPosition.z - self:GetPos().z)/-10))
+        self.currentZ = self:GetPos().z
+        self.trailSound:ChangePitch(100 + self.currentZ(self.endZ / self.startZ))
         self.checkTime = CurTime()
         for k, v in pairs(ents.FindInSphere(self:GetPos(), 200)) do
             if (v:IsPlayer()) then

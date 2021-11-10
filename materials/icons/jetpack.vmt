@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/jetpack_diff"
+	"$translucent" 1
+}

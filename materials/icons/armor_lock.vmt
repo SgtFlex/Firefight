@@ -1,0 +1,29 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/armor_lock_diff"
+	"$translucent" 1
+
+	$bumpmap "models/hr/unsc/bubble_shield/bubble_shield_nrml"
+	$cvar "[.62 .5]"
+	$svar "[10 5]"
+	$rvar -90
+	$tvar "[0 0]"
+	$nocull 1
+	"Proxies"
+	{
+	"LinearRamp"
+		{
+		"rate"	"-0.3"
+		"initialValue" "0"
+		"resultVar" "$tvar[1]"
+		}
+	"TextureTransform"
+		{
+		centerVar "$cvar"
+		scaleVar "$svar"
+		rotateVar "$rvar"
+		translateVar "$tvar"
+		resultVar "$bumptransform"
+		}
+	}
+}

@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/drop_shield_diff"
+	"$translucent" 1
+}

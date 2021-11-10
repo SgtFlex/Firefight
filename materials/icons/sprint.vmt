@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/sprint_diff"
+	"$translucent" 1
+}

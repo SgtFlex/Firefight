@@ -118,7 +118,9 @@ local SpawnSpots = {}
 
 local weaponBox
 function StartGame()
-	if SERVER then
+	if CLIENT then
+		surface.PlaySound("announcer/survival_welcome3.wav")
+	elseif SERVER then
 		net.Start("GameInfo")
 		net.WriteInt(maxReinforcements, 10)
 		net.WriteInt(maxSets, 10)
@@ -158,12 +160,16 @@ function StartGame()
 			allHealthPacks[index]:SetPos(Vector(math.random(-50, 50), math.random(-50, 50), 0) + ArmoryPos)
 			allHealthPacks[index]:Spawn()
 		end
-		StartSet()
 	end
+	timer.Simple(5, function() StartSet() end)
+	
 end
 
 
 function StartSet()
+	if CLIENT then
+		surface.PlaySound("announcer/survival_new_set.wav")
+	end
 	if SERVER then
 		currentSet = currentSet + 1
 		currentReinforcement = 0
@@ -183,20 +189,28 @@ function StartSet()
 		end
 		
 		PrintMessage(3, "Set Start: "..currentSet)
-		OrdananceDrop()
-		timer.Simple(10, function()
-			setStarted = true
-			StartReinforcement()
-		end)
+		
+		
 	end
+	timer.Simple(5, function() OrdananceDrop() end)
+	timer.Simple(15, function()
+		setStarted = true
+		StartReinforcement()
+	end)
+	
 end
 
 function EndSet()
-	for i=1, #EnemySpawn_Tbl do
-		EnemySpawn_Tbl[k]["Bank"] = StartingBanks[k]
+	if CLIENT then
+		surface.PlaySound("announcer/survival_end_set.wav")
+	elseif SERVER then
+		for i=1, #EnemySpawn_Tbl do
+			EnemySpawn_Tbl[k]["Bank"] = StartingBanks[k]
+		end
+		setStarted = false	
+		PrintMessage(3, "Set Completed")
+		
 	end
-	setStarted = false	
-	PrintMessage(3, "Set Completed")
 	timer.Simple(10, function() 
 		StartSet()
 	end)
@@ -206,7 +220,9 @@ end
 local bank = nil
 local maxCost = 1
 function StartReinforcement()
-	if SERVER then
+	if CLIENT then
+		surface.PlaySound("announcer/survival_awarded_lives.wav")
+	elseif SERVER then
 		if (setStarted == false) then return end
 		PrintMessage(3, "Reinforcements. Wave: "..currentReinforcement+1)
 		StartedReinforcement = true
@@ -287,32 +303,37 @@ local trace = nil
 
 
 function OrdananceDrop()
-	if (SERVER) then
-		PrintMessage(3, "Ordnance Drop")
-		local players = ents.FindByClass("player")
-		for i = 1, 3 do
-			ordnancePod = ents.Create("obj_ff_ordnance_pod")
-			startPosition = ExposedSpots[math.random(1, #ExposedSpots)] + Vector(0,0,100)
-			endPosition = startPosition + Vector(math.random(-1000, 1000), math.random(-1000, 1000), 10000)
-			trace = util.TraceLine({
-				start = startPosition,
-				endpos = endPosition,
-			})
-			debugoverlay.Line(startPosition, endPosition, 5, Color(255,255,255))
-			ordnancePod:SetPos(trace.HitPos + trace.HitNormal*200)
-			--ordnancePod:SetWeapons(OrdnanceWeapons)
-			ordnancePod:Spawn()
-			
-			net.Start("DisplayListAdd")
-			net.WriteTable({ordnancePod, "ORDNANCE", "hud/ordnance_marker", Color(0, 255, 0, 255)})
-			net.Broadcast()
-			ordnancePod:GetPhysicsObject():SetVelocity((startPosition-endPosition):GetNormalized()*4000)
-			ordnancePod:SetAngles(ordnancePod:GetPhysicsObject():GetVelocity():GetNormalized():Angle() + Angle(-90,0,0))
-		end
+	if CLIENT then
+		surface.PlaySound("announcer/survival_awarded_weapon.wav")
+		surface.PlaySound("ordnance_pod/pod_launch1.wav")
+	elseif SERVER then
+		timer.Simple(3, function()
+			PrintMessage(3, "Ordnance Drop")
+			local players = ents.FindByClass("player")
+			for i = 1, 3 do
+				ordnancePod = ents.Create("obj_ff_ordnance_pod")
+				startPosition = ExposedSpots[math.random(1, #ExposedSpots)] + Vector(0,0,100)
+				endPosition = startPosition + Vector(math.random(-1000, 1000), math.random(-1000, 1000), 10000)
+				trace = util.TraceLine({
+					start = startPosition,
+					endpos = endPosition,
+				})
+				debugoverlay.Line(startPosition, endPosition, 5, Color(255,255,255))
+				ordnancePod:SetPos(trace.HitPos + trace.HitNormal*200)
+				--ordnancePod:SetWeapons(OrdnanceWeapons)
+				ordnancePod:Spawn()
+				
+				net.Start("DisplayListAdd")
+				net.WriteTable({ordnancePod, "ORDNANCE", "hud/ordnance_marker", Color(0, 255, 0, 255)})
+				net.Broadcast()
+				ordnancePod:GetPhysicsObject():SetVelocity((startPosition-endPosition):GetNormalized()*4000)
+				ordnancePod:SetAngles(ordnancePod:GetPhysicsObject():GetVelocity():GetNormalized():Angle() + Angle(-90,0,0))
+			end
+		end)
 	end
 end
 
-function GM:EntityRemoved(ent)
+function GM:EntityRemoved(ent) --Clean this up
 	if (table.HasValue(AliveReinforcements, ent)) then
 		table.RemoveByValue(AliveReinforcements, ent)
 		if (currentReinforcement == maxReinforcements) then
@@ -323,10 +344,19 @@ function GM:EntityRemoved(ent)
 					net.Broadcast()
 				end
 				PrintMessage(3, ("5 enemies remaining"))
+				if (CLIENT) then
+					surface.PlaySound("announcer/survival_5_ai_remaining2.wav")
+				end
 			elseif (#AliveReinforcements == 2) then
 				PrintMessage(3, ("2 enemies remaining"))
+				if (CLIENT) then
+					surface.PlaySound("announcer/survival_2_ai_remaining2.wav")
+				end
 			elseif (#AliveReinforcements == 1) then
 				PrintMessage(3, ("Last enemy"))
+				if (CLIENT) then
+					surface.PlaySound("announcer/survival_1_ai_remaining.wav")
+				end
 			elseif (#AliveReinforcements <= 0) then
 				EndSet()
 			end
@@ -352,6 +382,13 @@ function GM:PlayerDeath(victim, inflictor, attacker)
 	net.WriteInt(playerLives, 8)
 	net.Broadcast()
 	PrintMessage(3, tostring(playerLives).." lives left.")
+	if playerLives==5 then
+		surface.PlaySound("announcer/survival_5_lives_left.wav")
+	elseif playerLives==1 then
+		surface.PlaySound("announcer/survival_1_life_left.wav")
+	elseif playerLives==0 then
+		surface.PlaySound("announcer/survival_0_lives_left.wav")
+	end
 	if (playerLives < 0) then
 		FinishGame(false)
 	end

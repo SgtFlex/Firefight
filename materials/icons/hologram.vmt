@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/hologram_diff"
+	"$translucent" 1
+}

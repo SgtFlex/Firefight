@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/active_camo_diff"
+	"$translucent" 1
+}
