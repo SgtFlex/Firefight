@@ -1,6 +1,9 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
-
-ENT.PrintName = "Hologram Equipment"
-
+ENT.Category = "Halo Equipment"
+ENT.Author = "Sgt Flexxx"
+ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
+ENT.Purpose = "To give the user Hologram."
+ENT.Instructions = "Press the activate key to send out a Hologram of the user to the pointed-at location."
 ENT.Spawnable = true
+ENT.PrintName = "Hologram Equipment"

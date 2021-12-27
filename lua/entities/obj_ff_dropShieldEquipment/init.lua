@@ -7,12 +7,11 @@ include ("entities/obj_ff_baseEquipment/init.lua")
 ENT.ModelColor = Color(0, 161, 255, 255)
 ENT.toggledOn = false
 ENT.bubble = nil
+ENT.KeyType = KeyTypes.PRESS
 
-function ENT:PressedQ()
-    self:ActivateBubbleShield()
-end
-
-function ENT:ActivateBubbleShield()
+ENT.oldActivate = ENT.ActivateEquipment
+function ENT:ActivateEquipment()
+    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     if (!self.owner:IsOnGround()) then return end
     self:EmitSound("equipment/bubble_shield/deploy_shield.wav")
     self.bubble = ents.Create("base_gmodentity")

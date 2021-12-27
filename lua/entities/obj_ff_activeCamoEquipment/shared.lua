@@ -1,6 +1,9 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
-
-ENT.PrintName = "Active Camo Equipment"
-
+ENT.Category = "Halo Equipment"
+ENT.Author = "Sgt Flexxx"
+ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
+ENT.Purpose = "To cloak the user."
+ENT.Instructions = "Press the activate key to cloak the user. Press the activate key again to decloak the user."
 ENT.Spawnable = true
+ENT.PrintName = "Active Camo Equipment"

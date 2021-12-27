@@ -5,17 +5,12 @@ include("shared.lua")
 include("entities/obj_ff_baseEquipment/init.lua")
 
 ENT.Model = "models/hr/unsc/equipment_jet_pack/equipment_jet_pack.mdl"
-
-function ENT:PressedQ()
-    self:ActivateJets()
-end
-
-function ENT:ReleasedQ()
-    self:DeactivateJets()
-end
+ENT.KeyType = KeyTypes.HOLD
 
 local jetLoop 
-function ENT:ActivateJets()
+ENT.oldActivate = ENT.ActivateEquipment
+function ENT:ActivateEquipment()
+    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     self.owner:SetPos(self.owner:GetPos() + Vector(0,0,6))
     jetLoop = CreateSound(self, "equipment/jet_pack/jet_loop1.wav")
     jetLoop:Play()
@@ -27,7 +22,9 @@ function ENT:ActivateJets()
     end)
 end
 
-function ENT:DeactivateJets()
+ENT.oldDeactivate = ENT.DeactivateEquipment
+function ENT:DeactivateEquipment()
+    if self.oldDeactivate(self)==false then return end
     if (!self.owner) then return end
     jetLoop:Stop()
     self:EmitSound("equipment/jet_pack/jet_out.wav")

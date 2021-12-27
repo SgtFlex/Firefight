@@ -5,17 +5,13 @@ include("shared.lua")
 include ("entities/obj_ff_baseEquipment/init.lua")
 ENT.ModelColor = Color(255, 93, 0, 255)
 ENT.toggledOn = false
-local loopSound
-function ENT:PressedQ()
-    self:ActivateArmorLock()
-end
+ENT.KeyType = KeyTypes.HOLD
 
-function ENT:ReleasedQ()
-    self:DeactivateArmorLock()
-end
 
 local loopSound
-function ENT:ActivateArmorLock()
+ENT.oldActivate = ENT.ActivateEquipment
+function ENT:ActivateEquipment()
+    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     if (!self.owner:IsOnGround()) then return end
     loopSound = CreateSound(self, "equipment/armor_lock/armorLockLoop.wav")
     loopSound:Play()
@@ -24,7 +20,9 @@ function ENT:ActivateArmorLock()
     self:EmitSound("equipment/armor_lock/armorLock_in.wav")
 end
 
-function ENT:DeactivateArmorLock()
+ENT.oldDeactivate = ENT.DeactivateEquipment
+function ENT:DeactivateEquipment()
+    if self.oldDeactivate(self)==false then return end
     loopSound:Stop()
     self.owner:RemoveFlags(FL_FROZEN)
     self.owner:RemoveFlags(FL_GODMODE)
