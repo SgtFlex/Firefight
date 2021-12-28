@@ -11,7 +11,6 @@ ENT.KeyType = KeyTypes.PRESS
 
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
-    print("attempt")
     if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     self.shield = ents.Create("obj_ff_bubble_shield")
     self.shield:SetPos(self.owner:GetPos() + self.owner:OBBCenter())
