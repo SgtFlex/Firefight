@@ -1,0 +1,9 @@
+ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
+ENT.Category = "Halo Equipment"
+ENT.Author = "Sgt Flexxx"
+ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
+ENT.Purpose = "To give the user Bubble shield equipment."
+ENT.Instructions = "Press the activate key to drop a Bubble Shield."
+ENT.Spawnable = true
+ENT.PrintName = "Bubble Shield Equipment"
