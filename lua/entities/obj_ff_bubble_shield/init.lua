@@ -3,6 +3,13 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
+local SndTbl_Collide = {
+    "equipment/shared/drop/equipment_drop (1).wav",
+    "equipment/shared/drop/equipment_drop (2).wav",
+    "equipment/shared/drop/equipment_drop (3).wav",
+    "equipment/shared/drop/equipment_drop (4).wav",
+}
+
 
 ENT.bubble = nil
 ENT.Duration = 10
@@ -65,4 +72,10 @@ function ENT:SpawnShield()
     constraint.NoCollide(self, self.bubble, 0, 0)
     constraint.NoCollide(self.bubble, self, 0, 0)
     constraint.Weld(self, self.bubble, 0, 0, 0, true, true)
+end
+
+function ENT:PhysicsCollide(colData, collider)
+    if (colData.Speed > 50) then
+        self:EmitSound(SndTbl_Collide[math.random(1, #SndTbl_Collide)])
+    end
 end

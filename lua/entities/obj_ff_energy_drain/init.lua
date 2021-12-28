@@ -2,15 +2,21 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
+ENT.Model = "models/hunter/misc/sphere025x025.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion1.wav",
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion2.wav",
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion3.wav",
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion5.wav",
 }
+local SndTbl_Collide = {
+    "equipment/shared/drop/equipment_drop (1).wav",
+    "equipment/shared/drop/equipment_drop (2).wav",
+    "equipment/shared/drop/equipment_drop (3).wav",
+    "equipment/shared/drop/equipment_drop (4).wav",
+}
 ENT.Duration = 7
-ENT.DrainRadius = 250
+ENT.DrainRadius = 200
 ENT.TickRate = 0.1
 ENT.DrainDamage = 10
 
@@ -41,7 +47,7 @@ function ENT:Explode()
     dmginfo:SetDamageType(DMG_BLAST)
     dmginfo:SetDamage(10)
     dmginfo:SetInflictor(self)
-    util.BlastDamageInfo(dmginfo, self:GetPos(), 600)
+    util.BlastDamageInfo(dmginfo, self:GetPos(), self.DrainRadius)
     util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
     self:EmitSound(self.SoundTbl_Explode[math.random(1, #self.SoundTbl_Explode)])
     self:Remove()
@@ -74,5 +80,11 @@ function ENT:OnTakeDamage(dmginfo)
     self:SetHealth(self:Health() - dmginfo:GetDamage())
     if self:Health() <= 0 then
         self:Explode()
+    end
+end
+
+function ENT:PhysicsCollide(colData, collider)
+    if (colData.Speed > 50) then
+        self:EmitSound(SndTbl_Collide[math.random(1, #SndTbl_Collide)])
     end
 end

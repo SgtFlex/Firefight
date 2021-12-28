@@ -4,10 +4,9 @@ include("shared.lua")
 
 ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
 ENT.SoundTbl_Explode = {
-    "equipment/trip_mine/tripmine_explosion/tripmine_explosion1.wav",
-    "equipment/trip_mine/tripmine_explosion/tripmine_explosion2.wav",
-    "equipment/trip_mine/tripmine_explosion/tripmine_explosion3.wav",
-    "equipment/trip_mine/tripmine_explosion/tripmine_explosion5.wav",
+    "equipment/regenerator/regenerator_expl/regenerator_expl1.wav",
+    "equipment/regenerator/regenerator_expl/regenerator_expl2.wav",
+    "equipment/regenerator/regenerator_expl/regenerator_expl3.wav",
 }
 local SndTbl_Collide = {
     "equipment/shared/drop/equipment_drop (1).wav",
@@ -15,8 +14,11 @@ local SndTbl_Collide = {
     "equipment/shared/drop/equipment_drop (3).wav",
     "equipment/shared/drop/equipment_drop (4).wav",
 }
-ENT.Duration = 10
-
+ENT.Duration = 15
+ENT.ReplenishRadius = 200
+ENT.TickRate = 0.1
+ENT.HealthAmount = 3
+ENT.ArmorAmount = 3
 
 function ENT:Initialize()
     self:SetMaxHealth(10)
@@ -25,27 +27,20 @@ function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
-    self:EmitSound("equipment/trip_mine/tripmine_armed.wav")
-    timer.Simple(0.85, function()
-        if (!IsValid(self)) then return end
-        self.loopSound = CreateSound(self, "equipment/trip_mine/loop.wav")
-        self.loopSound:Play()
-    end)
-    self.activateTime = CurTime() + 3
+    self:EmitSound("equipment/regenerator/in.wav")
+    self:EmitSound("equipment/regenerator/regenerator_arm.wav")
+    self.loopSound = CreateSound(self, "equipment/regenerator/loop.wav")
+    self.loopSound:Play()
+    self.activateTime = CurTime() + 1
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     
     timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
         if (!IsValid(self)) then return end
-        self:Expire()
+        self:Explode()
     end)
 end
 
 function ENT:Explode()
-    local dmginfo = DamageInfo()
-    dmginfo:SetDamageType(DMG_BLAST)
-    dmginfo:SetDamage(100)
-    dmginfo:SetInflictor(self)
-    util.BlastDamageInfo(dmginfo, self:GetPos(), 600)
     util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
     self:EmitSound(self.SoundTbl_Explode[math.random(1, #self.SoundTbl_Explode)])
     self:Remove()
@@ -56,16 +51,21 @@ function ENT:OnRemove()
     self.loopSound:Stop()
 end
 
+
 function ENT:Think()
     if (CurTime() > self.activateTime) then
-        for k, v in pairs(ents.FindInSphere(self:GetPos(), 150)) do
-            if v:IsNPC() or v:IsPlayer() then
-                self:Explode()
+        for k, v in pairs(ents.FindInSphere(self:GetPos(), self.ReplenishRadius)) do
+            if (v:IsNPC() or v:IsPlayer()) then
+                if (v:Health() < v:GetMaxHealth()) then
+                    v:SetHealth(math.min(v:Health() + self.HealthAmount, v:GetMaxHealth()))
+                elseif (v:Armor() < v:GetMaxArmor()) then
+                    v:SetArmor(math.min(v:Armor() + self.ArmorAmount, v:GetMaxArmor()))
+                end
             end
         end
     end
 
-    self:NextThink(CurTime()+1)
+    self:NextThink(CurTime()+self.TickRate)
     return true
 end
 
@@ -75,14 +75,6 @@ function ENT:OnTakeDamage(dmginfo)
     if self:Health() <= 0 then
         self:Explode()
     end
-end
-
-function ENT:Expire()
-    self:EmitSound("equipment/trip_mine/expire.wav")
-    timer.Simple(5, function()
-        if (!IsValid(self)) then return end
-        self:Explode()
-    end)
 end
 
 function ENT:PhysicsCollide(colData, collider)
