@@ -58,9 +58,10 @@ function ENT:Think()
             if (v:IsNPC() or v:IsPlayer()) then
                 if (v:Health() < v:GetMaxHealth()) then
                     v:SetHealth(math.min(v:Health() + self.HealthAmount, v:GetMaxHealth()))
-                elseif (v:Armor() < v:GetMaxArmor()) then
-                    v:SetArmor(math.min(v:Armor() + self.ArmorAmount, v:GetMaxArmor()))
                 end
+            end
+            if (v:IsPlayer() and v:Health() >= v:GetMaxHealth() and v:Armor() < v:GetMaxArmor()) then
+                v:SetArmor(math.min(v:Armor() + self.ArmorAmount, v:GetMaxArmor()))
             end
         end
     end

@@ -11,13 +11,15 @@ local jetLoop
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
     if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
-    self.owner:SetPos(self.owner:GetPos() + Vector(0,0,6))
     jetLoop = CreateSound(self, "equipment/jet_pack/jet_loop1.wav")
     jetLoop:Play()
     self:EmitSound("equipment/jet_pack/jet_in.wav")
     jetLoop:Play()
     timer.Create("Fly"..self.owner:GetCreationID(), 0.1, 0, function()
         if (!self.owner) then return end
+        if (self.owner:IsOnGround()) then
+            self.owner:SetPos(self.owner:GetPos() + Vector(0,0,6))
+        end
         self.owner:SetVelocity(Vector(0,0,80))
     end)
 end
