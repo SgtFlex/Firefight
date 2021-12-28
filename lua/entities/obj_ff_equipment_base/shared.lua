@@ -56,6 +56,7 @@ function ENT:ActivateEquipment()
     if (self.ResourceCur < self.ResourceCostInitial) then return false end
     self.EquipmentActive = true
     self.ResourceCur = self.ResourceCur - self.ResourceCostInitial
+    if self.ResourceCur < self.ResourceCostInitial and self.ResourceRegen <= 0 then self:Remove() end
     timer.Destroy("EquipmentRegen"..self:GetCreationID()) --Stop the regen if it's active
 
     if (self.KeyType != KeyTypes.PRESS) then

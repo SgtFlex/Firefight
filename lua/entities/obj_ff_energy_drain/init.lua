@@ -9,8 +9,10 @@ ENT.SoundTbl_Explode = {
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion3.wav",
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion5.wav",
 }
-ENT.Duration = 10
-
+ENT.Duration = 7
+ENT.DrainRadius = 250
+ENT.TickRate = 0.1
+ENT.DrainDamage = 10
 
 function ENT:Initialize()
     self:SetMaxHealth(10)
@@ -19,25 +21,25 @@ function ENT:Initialize()
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
-    self:EmitSound("equipment/trip_mine/tripmine_armed.wav")
-    timer.Simple(0.85, function()
-        if (!IsValid(self)) then return end
-        self.loopSound = CreateSound(self, "equipment/trip_mine/loop.wav")
-        self.loopSound:Play()
-    end)
-    self.activateTime = CurTime() + 3
+    self:EmitSound("equipment/energy_drain/in.wav")
+    self:EmitSound("equipment/energy_drain/flash.wav")
+    self.loopSound = CreateSound(self, "equipment/energy_drain/track1_loop.wav")
+    self.loopSound2 = CreateSound(self, "equipment/energy_drain/track2_loop.wav")
+    self.loopSound:Play()
+    self.loopSound2:Play()
+    self.activateTime = CurTime() + 1
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     
     timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
         if (!IsValid(self)) then return end
-        self:Expire()
+        self:Explode()
     end)
 end
 
 function ENT:Explode()
     local dmginfo = DamageInfo()
     dmginfo:SetDamageType(DMG_BLAST)
-    dmginfo:SetDamage(100)
+    dmginfo:SetDamage(10)
     dmginfo:SetInflictor(self)
     util.BlastDamageInfo(dmginfo, self:GetPos(), 600)
     util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
@@ -48,18 +50,22 @@ end
 
 function ENT:OnRemove()
     self.loopSound:Stop()
+    self.loopSound2:Stop()
 end
+
 
 function ENT:Think()
     if (CurTime() > self.activateTime) then
-        for k, v in pairs(ents.FindInSphere(self:GetPos(), 150)) do
-            if v:IsNPC() or v:IsPlayer() then
-                self:Explode()
+        for k, v in pairs(ents.FindInSphere(self:GetPos(), self.DrainRadius)) do
+            if (v:IsNPC() or v:IsPlayer()) then
+                if (v:Armor() > 0) then
+                    v:TakeDamage(math.min(self.DrainDamage, v:Armor()), self:GetOwner(), self)
+                end
             end
         end
     end
 
-    self:NextThink(CurTime()+1)
+    self:NextThink(CurTime()+self.TickRate)
     return true
 end
 
@@ -69,12 +75,4 @@ function ENT:OnTakeDamage(dmginfo)
     if self:Health() <= 0 then
         self:Explode()
     end
-end
-
-function ENT:Expire()
-    self:EmitSound("equipment/trip_mine/expire.wav")
-    timer.Simple(5, function()
-        if (!IsValid(self)) then return end
-        self:Explode()
-    end)
 end
