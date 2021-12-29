@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
+ENT.Model = "models/hr/unsc/equipment_trip_mine/equipment_trip_mine.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion1.wav",
     "equipment/trip_mine/tripmine_explosion/tripmine_explosion2.wav",
@@ -22,6 +22,7 @@ function ENT:Initialize()
     self:SetMaxHealth(10)
     self:SetHealth(10)
     self:SetModel(self.Model)
+    self:SetBodygroup(1, 1)
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
@@ -30,6 +31,7 @@ function ENT:Initialize()
         if (!IsValid(self)) then return end
         self.loopSound = CreateSound(self, "equipment/trip_mine/loop.wav")
         self.loopSound:Play()
+        
     end)
     self.activateTime = CurTime() + 3
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
@@ -38,6 +40,7 @@ function ENT:Initialize()
         if (!IsValid(self)) then return end
         self:Expire()
     end)
+    
 end
 
 function ENT:Explode()

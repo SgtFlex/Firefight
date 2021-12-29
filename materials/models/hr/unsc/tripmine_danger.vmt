@@ -1,0 +1,30 @@
+"UnlitGeneric"
+{
+// File Created by Wall Worm Pro ( http://dev.wallworm.com )
+
+// BEGIN Textures
+	$basetexture "models/hr/unsc/tripmine_danger"
+	$model 1
+	$translucent 1
+	$color2 "[10 5 0]"
+	$additive 1
+// END Textures
+
+	"Proxies"
+	{	
+		TextureScroll
+		{
+			textureScrollVar $basetexturetransform
+			textureScrollRate 0.1
+			textureScrollAngle 180
+		}
+		Sine // a proxy which produces a sine wave
+		{
+			resultVar	$alpha // The shader parameter to be manipulated
+			sineperiod	0.5
+			sinemin		0.25
+			sinemax		0.5
+		}
+
+	}
+}
