@@ -38,7 +38,7 @@ function ENT:Initialize()
 end
 
 function ENT:Explode()
-    ParticleEffectAttach("Equipment_destroy", 4, self, 0)
+    ParticleEffect("Equipment_destroy", self:GetPos(), Angle(0,0,0))
     util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
     self:EmitSound(self.SoundTbl_Explode[math.random(1, #self.SoundTbl_Explode)])
     self:Remove()
