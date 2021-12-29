@@ -12,11 +12,12 @@ local SndTbl_Collide = {
     "equipment/shared/drop/equipment_drop (3).wav",
     "equipment/shared/drop/equipment_drop (4).wav",
 }
-ENT.Duration = 30
+ENT.Duration = 0
 ENT.EffectRadius = 300
 ENT.TickRate = 0.1
 ENT.HealthAmount = 3
 ENT.ArmorAmount = 3
+
 
 function ENT:Initialize()
     self:SetMaxHealth(10)
@@ -31,10 +32,12 @@ function ENT:Initialize()
     self.activateTime = CurTime() + 1
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     ParticleEffectAttach("Gravity_Lift", 4, self, 1)
-    timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
-        if (!IsValid(self)) then return end
-        self:Explode()
-    end)
+    if (self.Duration > 0) then
+        timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
+            if (!IsValid(self)) then return end
+            self:Explode()
+        end)
+    end
 end
 
 function ENT:Explode()

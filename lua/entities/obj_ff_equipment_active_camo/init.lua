@@ -2,11 +2,12 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
 include("shared.lua")
-include ("entities/obj_ff_equipment_base/init.lua")
+include("entities/bases/obj_ff_equipment_base/init.lua")
 
 util.AddNetworkString("Cloak")
 
 ENT.ModelColor = Color(0, 255, 255, 255)
+ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 ENT.KeyType = KeyTypes.TOGGLE
 local loopSound
 

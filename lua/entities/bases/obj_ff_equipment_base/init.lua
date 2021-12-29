@@ -5,8 +5,6 @@ include("shared.lua")
 util.AddNetworkString("AddEquipmentIcon")
 ENT.owner = nil
 
-ENT.ModelColor = Color(255, 255, 255, 255)
-ENT.Skin = 0
 ENT.Model = "models/hr/unsc/equipment/equipment.mdl"
 KeyTypes = {
     TOGGLE = 1,
@@ -26,13 +24,11 @@ local SndTbl_Collide = {
 
 function ENT:Initialize()
     self:DrawShadow(false)
-    self.Snd_EquipmentLoop = CreateSound(self, "equipment/shared/equipment_loop.wav")
-    self.Snd_EquipmentLoop:Play()
-    self.Snd_EquipmentLoop:ChangeVolume(0.25)
-    self.Snd_EquipmentLoop:SetSoundLevel(20)
+    self:PlayIdleSound()
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     self:SetUseType(SIMPLE_USE)
     self:SetModel(self.Model)
+    if self.ModelColor then self:SetColor(self.ModelColor) end
     if self.Skin then self:SetSkin(self.Skin) end
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -133,6 +129,11 @@ function ENT:Drop()
     self:SetNoDraw(false)
     self.owner.HaloEquipment = nil
     self.owner = nil
+    self:PlayIdleSound()
+end
+
+function ENT:PlayIdleSound()
+    if self.Sound_Idle==nil then return end
     self.Snd_EquipmentLoop = CreateSound(self, "equipment/shared/equipment_loop.wav")
     self.Snd_EquipmentLoop:Play()
     self.Snd_EquipmentLoop:ChangeVolume(0.25)
@@ -144,5 +145,5 @@ function ENT:OnRemove()
         self:Drop()
     end
     
-    self.Snd_EquipmentLoop:Stop()
+    if (self.Snd_EquipmentLoop) then self.Snd_EquipmentLoop:Stop() end
 end

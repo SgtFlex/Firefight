@@ -2,12 +2,14 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
 include("shared.lua")
-include ("entities/obj_ff_equipment_base/init.lua")
+include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.ModelColor = Color(0, 161, 255, 255)
 ENT.toggledOn = false
 ENT.bubble = nil
 ENT.KeyType = KeyTypes.PRESS
+ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
+
 
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()

@@ -2,10 +2,11 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
 include("shared.lua")
-include("entities/obj_ff_equipment_base/init.lua")
+include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.ModelColor = Color(33, 255, 0, 255)
 ENT.KeyType = KeyTypes.HOLD
+ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 
 
 ENT.oldWalkSpeed = nil

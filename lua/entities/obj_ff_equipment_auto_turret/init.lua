@@ -1,10 +1,9 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/obj_ff_equipment_base/init.lua")
+include("entities/bases/obj_ff_equipment_base/init.lua")
 
-ENT.ModelColor = Color(127, 0, 255, 255)
-ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
+ENT.Model = "models/sentinels/sentinel_turret.mdl"
 ENT.KeyType = KeyTypes.PRESS
 ENT.ResourceRegen = 0
 ENT.ResourceCostInitial = 1

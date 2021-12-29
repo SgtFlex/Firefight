@@ -1,7 +1,7 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/obj_ff_equipment_base/init.lua")
+include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.Model = "models/hr/cov/equipment_power_drain/equipment_power_drain.mdl"
 ENT.Skin = 3

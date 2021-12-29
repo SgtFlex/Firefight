@@ -1,7 +1,7 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/obj_ff_equipment_base/init.lua")
+include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.Model = "models/hr/unsc/equipment_trip_mine/equipment_trip_mine.mdl"
 ENT.KeyType = KeyTypes.PRESS

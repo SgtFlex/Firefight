@@ -22,7 +22,7 @@ if SERVER then
     function ENT:AttachToPlayer(player)
         self.owner = player
         if (self.owner.HaloEquipment!=nil and self.owner.HaloEquipment.Drop!=nil) then self.owner.HaloEquipment:Drop() end
-        self.Snd_EquipmentLoop:Stop()
+        if (self.Snd_EquipmentLoop) then self.Snd_EquipmentLoop:Stop() end
         self:EmitSound("equipment/shared/equipment_pickup.wav")
         self.owner.HaloEquipment = self
         self:SetParent(self.owner)

@@ -19,6 +19,8 @@ ENT.Duration = 7
 ENT.DrainRadius = 200
 ENT.TickRate = 0.1
 ENT.DrainDamage = 10
+ENT.Sound_Idle = nil
+
 
 function ENT:Initialize()
     self:SetMaxHealth(10)
