@@ -6,6 +6,7 @@ util.AddNetworkString("AddEquipmentIcon")
 ENT.owner = nil
 
 ENT.ModelColor = Color(255, 255, 255, 255)
+ENT.Skin = 0
 ENT.Model = "models/hr/unsc/equipment/equipment.mdl"
 KeyTypes = {
     TOGGLE = 1,
@@ -31,8 +32,8 @@ function ENT:Initialize()
     self.Snd_EquipmentLoop:SetSoundLevel(20)
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     self:SetUseType(SIMPLE_USE)
-    self:SetColor(self.ModelColor)
     self:SetModel(self.Model)
+    if self.Skin then self:SetSkin(self.Skin) end
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)

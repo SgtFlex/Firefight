@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.Model = "models/hunter/misc/sphere025x025.mdl"
+ENT.Model = "models/hr/cov/equipment_power_drain/equipment_power_drain.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/flare/superflare_expl.wav",
 }

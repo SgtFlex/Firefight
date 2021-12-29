@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
+ENT.Model = "models/hr/cov/equipment_regenerator/equipment_regenerator.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/regenerator/regenerator_expl/regenerator_expl1.wav",
     "equipment/regenerator/regenerator_expl/regenerator_expl2.wav",
@@ -67,6 +67,7 @@ function ENT:Think()
     end
 
     self:NextThink(CurTime()+self.TickRate)
+    self:GetPhysicsObject():SetAngles(Angle(0,0,0))
     return true
 end
 

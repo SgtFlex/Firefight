@@ -4,8 +4,8 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 include("entities/obj_ff_equipment_base/init.lua")
 
-ENT.ModelColor = Color(127, 0, 255, 255)
-ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
+ENT.Model = "models/hr/cov/equipment_bubble_shield/equipment_bubble_shield.mdl"
+ENT.Skin = 3
 ENT.KeyType = KeyTypes.PRESS
 ENT.ResourceRegen = 0
 ENT.ResourceCostInitial = 1

@@ -14,7 +14,7 @@ local SndTbl_Collide = {
 ENT.bubble = nil
 ENT.Duration = 10
 function ENT:Initialize()
-    self:SetModel("models/props_interiors/pot01a.mdl")
+    self:SetModel("models/hr/cov/equipment_bubble_shield/equipment_bubble_shield.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)

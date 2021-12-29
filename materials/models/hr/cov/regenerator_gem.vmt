@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+// File Created by Wall Worm Pro ( http://dev.wallworm.com )
+
+// BEGIN Color
+	$basetexture "models/hr/cov/regenerator_gem_illum"
+	"$color2" "[0 0.5 0]"
+// END Color
+	$selfillum 1
+	$selfillummask "models/hr/cov/regenerator_gem_illum"
+	$selfillumtint "[0 30 0]"
+}

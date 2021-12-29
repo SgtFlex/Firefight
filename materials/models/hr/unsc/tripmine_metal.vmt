@@ -13,4 +13,5 @@
 	"$PhongExponent" "10"
 	"$phongalbedotint" "1"
 	"$phongfresnelranges" "[3 5 7]"
+	$selfillum 1
 }

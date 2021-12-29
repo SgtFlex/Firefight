@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+// File Created by Wall Worm Pro ( http://dev.wallworm.com )
+
+// BEGIN Textures
+	$basetexture "models/hr/cov/bubble_shield"
+	$bumpmap "models/hr/cov/jammer_powerdrain_bump"
+	$color2 "[3 3 3]"
+// END Textures
+	"$phong" "1"
+	"$phongboost" "0.25"
+	"$PhongExponent" "10"
+	"$phongalbedotint" "1"
+	"$phongfresnelranges" "[3 5 7]"
+	$selfillum 1
+	$selfillummask "models/hr/cov/power_drain_illum"
+	$selfillumtint "[1 0.5 0]"
+}

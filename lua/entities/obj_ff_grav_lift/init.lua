@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.Model = "models/hr/unsc/equipment_pack_elite/equipment_pack_elite.mdl"
+ENT.Model = "models/hr/cov/equipment_grav_lift/equipment_grav_lift.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/portable_gravity_lift/gravlift_death.wav",
 }

@@ -1,0 +1,19 @@
+"VertexLitGeneric"
+{
+// File Created by Wall Worm Pro ( http://dev.wallworm.com )
+
+// BEGIN Textures
+	$basetexture "models/hr/cov/regenerator_dif"
+	$bumpmap "models/hr/cov/regenerator_bump"
+// END Textures
+	"$phong" "1"
+	"$phongboost" "0.25"
+	"$PhongExponent" "10"
+	"$phongalbedotint" "1"
+	"$phongfresnelranges" "[3 5 7]"
+	$selfillum 1
+	$selfillummask "models/hr/cov/regenerator_illum"
+	$selfillumtint "[0 30 0]"
+
+
+}
