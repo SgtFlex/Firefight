@@ -33,7 +33,7 @@ function ENT:Initialize()
     self.loopSound:Play()
     self.activateTime = CurTime() + 1
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-    
+    ParticleEffectAttach("Regenerator", 4, self, 1)
     timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
         if (!IsValid(self)) then return end
         self:Explode()
@@ -52,22 +52,28 @@ function ENT:OnRemove()
 end
 
 
+ENT.LastRun = 0
 function ENT:Think()
-    if (CurTime() > self.activateTime) then
-        for k, v in pairs(ents.FindInSphere(self:GetPos(), self.ReplenishRadius)) do
-            if (v:IsNPC() or v:IsPlayer()) then
-                if (v:Health() < v:GetMaxHealth()) then
-                    v:SetHealth(math.min(v:Health() + self.HealthAmount, v:GetMaxHealth()))
+    if (CurTime() >= self.LastRun + self.TickRate) then
+        self.LastRun = CurTime()
+        if (CurTime() > self.activateTime) then
+            for k, v in pairs(ents.FindInSphere(self:GetPos(), self.ReplenishRadius)) do
+                if (v:IsNPC() or v:IsPlayer()) then
+                    if (v:Health() < v:GetMaxHealth()) then
+                        v:SetHealth(math.min(v:Health() + self.HealthAmount, v:GetMaxHealth()))
+                    end
                 end
-            end
-            if (v:IsPlayer() and v:Health() >= v:GetMaxHealth() and v:Armor() < v:GetMaxArmor()) then
-                v:SetArmor(math.min(v:Armor() + self.ArmorAmount, v:GetMaxArmor()))
+                if (v:IsPlayer() and v:Health() >= v:GetMaxHealth() and v:Armor() < v:GetMaxArmor()) then
+                    v:SetArmor(math.min(v:Armor() + self.ArmorAmount, v:GetMaxArmor()))
+                end
             end
         end
     end
 
-    self:NextThink(CurTime()+self.TickRate)
-    self:GetPhysicsObject():SetAngles(Angle(0,0,0))
+    self.oldVel = self:GetPhysicsObject():GetVelocity()
+    self:NextThink(CurTime())
+    self:GetPhysicsObject():SetAngles(Angle(0,self:GetAngles().y,0))
+    self:GetPhysicsObject():SetVelocity(self.oldVel)
     return true
 end
 

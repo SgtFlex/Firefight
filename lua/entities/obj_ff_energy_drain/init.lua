@@ -35,7 +35,7 @@ function ENT:Initialize()
     self.loopSound2:Play()
     self.activateTime = CurTime() + 1
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-    
+    ParticleEffectAttach("Powerdrain", 4, self, 0)
     timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
         if (!IsValid(self)) then return end
         self:Explode()

@@ -12,8 +12,8 @@ local SndTbl_Collide = {
     "equipment/shared/drop/equipment_drop (3).wav",
     "equipment/shared/drop/equipment_drop (4).wav",
 }
-ENT.Duration = 15
-ENT.ReplenishRadius = 200
+ENT.Duration = 30
+ENT.EffectRadius = 300
 ENT.TickRate = 0.1
 ENT.HealthAmount = 3
 ENT.ArmorAmount = 3
@@ -30,7 +30,7 @@ function ENT:Initialize()
     self.loopSound:Play()
     self.activateTime = CurTime() + 1
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-    
+    ParticleEffectAttach("Gravity_Lift", 4, self, 1)
     timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
         if (!IsValid(self)) then return end
         self:Explode()
@@ -38,6 +38,7 @@ function ENT:Initialize()
 end
 
 function ENT:Explode()
+    ParticleEffectAttach("Equipment_destroy", 4, self, 0)
     util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
     self:EmitSound(self.SoundTbl_Explode[math.random(1, #self.SoundTbl_Explode)])
     self:Remove()
@@ -55,8 +56,8 @@ function ENT:Think()
             start = self:GetPos(),
             endpos = self:GetPos() + self:GetUp()*100,
             filter = self,
-            mins = Vector(-15,-15, 0),
-            maxs = Vector(15,15, 0),
+            mins = Vector(-25,-25, 0),
+            maxs = Vector(25,25, 0),
             ignoreworld = true,
         })
         debugoverlay.Box(self:GetPos(), Vector(-15,-15,0), Vector(15,15,100), self.TickRate*3)

@@ -79,3 +79,11 @@ function ENT:PhysicsCollide(colData, collider)
         self:EmitSound(SndTbl_Collide[math.random(1, #SndTbl_Collide)])
     end
 end
+
+function ENT:Think()
+    self.oldVel = self:GetPhysicsObject():GetVelocity()
+    self:NextThink(CurTime())
+    self:GetPhysicsObject():SetAngles(Angle(0,self:GetAngles().y,0))
+    self:GetPhysicsObject():SetVelocity(self.oldVel)
+    return true
+end
