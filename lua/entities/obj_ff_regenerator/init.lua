@@ -1,6 +1,7 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
+include("entities/bases/deployable_base/init.lua")
 
 ENT.Model = "models/hr/cov/equipment_regenerator/equipment_regenerator.mdl"
 ENT.SoundTbl_Explode = {
@@ -8,64 +9,27 @@ ENT.SoundTbl_Explode = {
     "equipment/regenerator/regenerator_expl/regenerator_expl2.wav",
     "equipment/regenerator/regenerator_expl/regenerator_expl3.wav",
 }
-local SndTbl_Collide = {
-    "equipment/shared/drop/equipment_drop (1).wav",
-    "equipment/shared/drop/equipment_drop (2).wav",
-    "equipment/shared/drop/equipment_drop (3).wav",
-    "equipment/shared/drop/equipment_drop (4).wav",
+ENT.SndTbl_Deploy = {
+    "equipment/regenerator/in.wav",
 }
-ENT.Duration = 15
-ENT.ReplenishRadius = 200
-ENT.TickRate = 0.1
-ENT.HealthAmount = 3
-ENT.ArmorAmount = 3
+ENT.Snd_IdleLoop = "equipment/regenerator/loop.wav"
+ENT.EffectRadius = 200
+ENT.EffectDelay = 0.5
+ENT.EffectTickRate = 0.1
+ENT.EffectPFX = "Regenerator"
+ENT.ExplosionDamage = 0
 
-function ENT:Initialize()
-    self:SetMaxHealth(10)
-    self:SetHealth(10)
-    self:SetModel(self.Model)
-    self:PhysicsInit(SOLID_VPHYSICS)
-    self:SetMoveType(MOVETYPE_VPHYSICS)
-    self:SetSolid(SOLID_VPHYSICS)
-    self:EmitSound("equipment/regenerator/in.wav")
-    self:EmitSound("equipment/regenerator/regenerator_arm.wav")
-    self.loopSound = CreateSound(self, "equipment/regenerator/loop.wav")
-    self.loopSound:Play()
-    self.activateTime = CurTime() + 1
-    self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-    ParticleEffectAttach("Regenerator", 4, self, 1)
-    timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
-        if (!IsValid(self)) then return end
-        self:Explode()
-    end)
-end
-
-function ENT:Explode()
-    util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
-    self:EmitSound(self.SoundTbl_Explode[math.random(1, #self.SoundTbl_Explode)])
-    self:Remove()
-end
-
-
-function ENT:OnRemove()
-    self.loopSound:Stop()
-end
+ENT.HealthPerTick = 3
+ENT.ArmorPerTick = 3
 
 
 ENT.LastRun = 0
 function ENT:Think()
-    if (CurTime() >= self.LastRun + self.TickRate) then
+    if (CurTime() >= self.LastRun + self.EffectTickRate) then
         self.LastRun = CurTime()
         if (CurTime() > self.activateTime) then
-            for k, v in pairs(ents.FindInSphere(self:GetPos(), self.ReplenishRadius)) do
-                if (v:IsNPC() or v:IsPlayer()) then
-                    if (v:Health() < v:GetMaxHealth()) then
-                        v:SetHealth(math.min(v:Health() + self.HealthAmount, v:GetMaxHealth()))
-                    end
-                end
-                if (v:IsPlayer() and v:Health() >= v:GetMaxHealth() and v:Armor() < v:GetMaxArmor()) then
-                    v:SetArmor(math.min(v:Armor() + self.ArmorAmount, v:GetMaxArmor()))
-                end
+            for k, v in pairs(ents.FindInSphere(self:GetPos(), self.EffectRadius)) do
+                self:EntityEffect(v)
             end
         end
     end
@@ -77,16 +41,13 @@ function ENT:Think()
     return true
 end
 
-function ENT:OnTakeDamage(dmginfo)
-    if dmginfo:GetInflictor()==self then return end
-    self:SetHealth(self:Health() - dmginfo:GetDamage())
-    if self:Health() <= 0 then
-        self:Explode()
+function ENT:EntityEffect(entity)
+    if (entity:IsNPC() or entity:IsPlayer()) then
+        if (entity:Health() < entity:GetMaxHealth()) then
+            entity:SetHealth(math.min(entity:Health() + self.HealthPerTick, entity:GetMaxHealth()))
+        end
     end
-end
-
-function ENT:PhysicsCollide(colData, collider)
-    if (colData.Speed > 50) then
-        self:EmitSound(SndTbl_Collide[math.random(1, #SndTbl_Collide)])
+    if (entity:IsPlayer() and entity:Health() >= entity:GetMaxHealth() and entity:Armor() < entity:GetMaxArmor()) then
+        entity:SetArmor(math.min(entity:Armor() + self.ArmorPerTick, entity:GetMaxArmor()))
     end
 end

@@ -1,56 +1,23 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
+include("entities/bases/deployable_base/init.lua")
+
 
 ENT.Model = "models/hr/cov/equipment_grav_lift/equipment_grav_lift.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/portable_gravity_lift/gravlift_death.wav",
 }
-local SndTbl_Collide = {
-    "equipment/shared/drop/equipment_drop (1).wav",
-    "equipment/shared/drop/equipment_drop (2).wav",
-    "equipment/shared/drop/equipment_drop (3).wav",
-    "equipment/shared/drop/equipment_drop (4).wav",
+ENT.SndTbl_Deploy = {
+    "equipment/portable_gravity_lift/deploy.wav",
 }
-ENT.Duration = 0
+ENT.Snd_IdleLoop = "equipment/portable_gravity_lift/loop.wav"
 ENT.EffectRadius = 300
-ENT.TickRate = 0.1
-ENT.HealthAmount = 3
-ENT.ArmorAmount = 3
+ENT.EffectDelay = 0.5
+ENT.EffectTickRate = 0.1
+ENT.EffectPFX = "Gravity_Lift"
+ENT.ExplosionDamage = 0
 
-
-function ENT:Initialize()
-    self:SetMaxHealth(10)
-    self:SetHealth(10)
-    self:SetModel(self.Model)
-    self:PhysicsInit(SOLID_VPHYSICS)
-    self:SetMoveType(MOVETYPE_VPHYSICS)
-    self:SetSolid(SOLID_VPHYSICS)
-    self:EmitSound("equipment/portable_gravity_lift/deploy.wav")
-    self.loopSound = CreateSound(self, "equipment/portable_gravity_lift/loop.wav")
-    self.loopSound:Play()
-    self.activateTime = CurTime() + 1
-    self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-    ParticleEffectAttach("Gravity_Lift", 4, self, 1)
-    if (self.Duration > 0) then
-        timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
-            if (!IsValid(self)) then return end
-            self:Explode()
-        end)
-    end
-end
-
-function ENT:Explode()
-    ParticleEffect("Equipment_destroy", self:GetPos(), Angle(0,0,0))
-    util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
-    self:EmitSound(self.SoundTbl_Explode[math.random(1, #self.SoundTbl_Explode)])
-    self:Remove()
-end
-
-
-function ENT:OnRemove()
-    self.loopSound:Stop()
-end
 
 ENT.LastLiftSound = 0
 function ENT:Think()
@@ -63,38 +30,26 @@ function ENT:Think()
             maxs = Vector(25,25, 0),
             ignoreworld = true,
         })
-        debugoverlay.Box(self:GetPos(), Vector(-15,-15,0), Vector(15,15,100), self.TickRate*3)
         if (tr.Hit and CurTime() > self.LastLiftSound + 0.5) then
             self.LastLiftSound = CurTime()
             self:EmitSound("equipment/portable_gravity_lift/lift.wav")
         end
-        
-        if (tr.Entity:IsPlayer()) then
-            if (tr.Entity:IsOnGround()) then
-                tr.Entity:SetPos(tr.Entity:GetPos() + Vector(0,0,6))
-            end
-            tr.Entity:SetVelocity(self:GetUp()*200)
-        elseif (tr.Entity:IsNPC()) then
-            tr.Entity:SetVelocity(self:GetUp()*200)
-        elseif (IsValid(tr.Entity) and IsValid(tr.Entity:GetPhysicsObject())) then
-            tr.Entity:GetPhysicsObject():AddVelocity(self:GetUp()*200)
-        end
+        self:EntityEffect(tr.Entity)
     end
 
-    self:NextThink(CurTime()+self.TickRate)
+    self:NextThink(CurTime()+self.EffectTickRate)
     return true
 end
 
-function ENT:OnTakeDamage(dmginfo)
-    if dmginfo:GetInflictor()==self then return end
-    self:SetHealth(self:Health() - dmginfo:GetDamage())
-    if self:Health() <= 0 then
-        self:Explode()
-    end
-end
-
-function ENT:PhysicsCollide(colData, collider)
-    if (colData.Speed > 50) then
-        self:EmitSound(SndTbl_Collide[math.random(1, #SndTbl_Collide)])
+function ENT:EntityEffect(entity)
+    if (entity:IsPlayer()) then
+        if (entity:IsOnGround()) then
+            entity:SetPos(entity:GetPos() + Vector(0,0,6))
+        end
+        entity:SetVelocity(self:GetUp()*200)
+    elseif (entity:IsNPC()) then
+        entity:SetVelocity(self:GetUp()*200)
+    elseif (IsValid(entity) and IsValid(entity:GetPhysicsObject())) then
+        entity:GetPhysicsObject():AddVelocity(self:GetUp()*200)
     end
 end

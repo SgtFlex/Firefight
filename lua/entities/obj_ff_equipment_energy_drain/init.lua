@@ -16,6 +16,7 @@ ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
     if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     self.mine = ents.Create("obj_ff_energy_drain")
+    self.mine.Duration = 7
     self.mine.owner = self.owner
     self.mine:Spawn()
     self.mine:SetPos(self.owner:GetPos() + self.owner:OBBCenter())
