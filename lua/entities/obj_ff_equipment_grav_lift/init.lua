@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 include("entities/bases/obj_ff_equipment_base/init.lua")
 
-ENT.Model = "models/hr/cov/equipment_grav_lift/equipment_grav_lift.mdl"
+ENT.Model = "models/hr/cov/equipment_grav_lift/equipment_grav_lift_undeployed.mdl"
 ENT.KeyType = KeyTypes.PRESS
 ENT.ResourceRegen = 0
 ENT.ResourceCostInitial = 1
