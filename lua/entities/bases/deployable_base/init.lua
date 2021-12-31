@@ -26,7 +26,7 @@ ENT.ExplosionDamage = 0
 ENT.ExplosionRadius = 300
 ENT.Skin = nil
 ENT.Bodygroups = nil
-
+ENT.DeployAnimation = nil
 
 
 function ENT:Initialize()
@@ -40,8 +40,10 @@ function ENT:Initialize()
     self:SetSolid(SOLID_VPHYSICS)
     self:GetPhysicsObject():Wake()
     if (!table.IsEmpty(self.SndTbl_Deploy)) then self:EmitSound(self.SndTbl_Deploy[math.random(1, #self.SndTbl_Deploy)]) end
+    if (self.DeployAnimation!=nil) then timer.Simple(0.1, function() self:ResetSequence(self.DeployAnimation) end) end
     timer.Simple(self.EffectDelay, function()
         if (!IsValid(self) or self.Snd_IdleLoop==nil) then return end
+        if (self.LoopAnimation!=nil) then self:ResetSequence(self.LoopAnimation) end
         self.loopSound = CreateSound(self, self.Snd_IdleLoop)
         self.loopSound:Play()
         if (self.EffectPFX!=nil) then ParticleEffectAttach(self.EffectPFX, 4, self, 1) end

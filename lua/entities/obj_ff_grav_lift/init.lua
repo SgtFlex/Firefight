@@ -17,11 +17,14 @@ ENT.EffectDelay = 0.5
 ENT.EffectTickRate = 0.1
 ENT.EffectPFX = "Gravity_Lift"
 ENT.ExplosionDamage = 0
-
+ENT.DeployAnimation = "deploy"
+ENT.LoopAnimation = "idle_deployed"
 
 ENT.LastLiftSound = 0
+ENT.LastActivateTime = 0
 function ENT:Think()
-    if (CurTime() > self.activateTime) then
+    if (CurTime() > self.activateTime and CurTime() > self.LastActivateTime + self.EffectTickRate) then
+        self.LastActivateTime = CurTime()
         local tr = util.TraceHull({
             start = self:GetPos(),
             endpos = self:GetPos() + self:GetUp()*100,
@@ -36,8 +39,7 @@ function ENT:Think()
         end
         self:EntityEffect(tr.Entity)
     end
-
-    self:NextThink(CurTime()+self.EffectTickRate)
+    self:NextThink(CurTime())
     return true
 end
 

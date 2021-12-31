@@ -18,10 +18,11 @@ ENT.EffectDelay = 0.5
 ENT.EffectTickRate = 0.1
 ENT.EffectPFX = "Regenerator"
 ENT.ExplosionDamage = 0
+ENT.LoopAnimation = "spin"
+
 
 ENT.HealthPerTick = 3
 ENT.ArmorPerTick = 3
-
 
 ENT.LastRun = 0
 function ENT:Think()
@@ -33,7 +34,6 @@ function ENT:Think()
             end
         end
     end
-
     self.oldVel = self:GetPhysicsObject():GetVelocity()
     self:NextThink(CurTime())
     self:GetPhysicsObject():SetAngles(Angle(0,self:GetAngles().y,0))

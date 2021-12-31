@@ -7,3 +7,4 @@ ENT.Purpose = "To regenerate health and shields."
 ENT.Instructions = "Use on allies to replenish health and shields."
 ENT.Spawnable = true
 ENT.PrintName = "Regenerator"
+ENT.AutomaticFrameAdvance = true

@@ -10,6 +10,8 @@ ENT.SndTbl_Deploy = {
 ENT.Snd_IdleLoop = "equipment/bubble_shield/deploy_shield_loop.wav"
 ENT.EffectDelay = 0.85
 ENT.StartHealth = 25
+ENT.EffectPFX = "BubbleShield"
+ENT.LoopAnimation = "spin"
 
 
 ENT.bubble = nil
@@ -23,18 +25,21 @@ local oldRemove = ENT.OnRemove
 function ENT:OnRemove()
     oldRemove(self)
     self:EmitSound("equipment/bubble_shield/bubble_deativate.wav")
-    self.bubble:Remove()
+    ParticleEffect("Bubble_destroy", self.bubble:GetPos(), Angle(0,0,0))
+    self.bubble:Remove()    
 end
 
 function ENT:SpawnShield()
     self.bubble = ents.Create("base_gmodentity")
     self.bubble.Initialize = function(self)
+        self:SetModel("models/hr/unsc/bubble_shield/bubble_shield.mdl")
+        self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetModelScale(0)
         self:SetModelScale(1, 0.85)
-        self:PhysicsInit(SOLID_NONE)
+        self:SetSkin(2)
+        self:PhysicsInit(SOLID_VPHYSICS)
         self:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
         self:SetCustomCollisionCheck(true)
-        self:SetMaterial("effects/bubble_shield")
         self:DrawShadow(false)
         self:AddEFlags(EFL_DONTBLOCKLOS)
         self:CollisionRulesChanged()
@@ -44,14 +49,13 @@ function ENT:SpawnShield()
             end
         end)
     end
-    self.bubble:SetModel("models/hr/unsc/bubble_shield/bubble_shield.mdl")
     self.bubble:SetPos(self:GetPos())
     self.bubble:Spawn()
     self.bubble:Activate()
-    self.bubble:SetMoveType(MOVETYPE_NONE)
 end
 
 function ENT:Think()
+    self.bubble:SetPos(self:GetPos())
     self.oldVel = self:GetPhysicsObject():GetVelocity()
     self:NextThink(CurTime())
     self:GetPhysicsObject():SetAngles(Angle(0,self:GetAngles().y,0))

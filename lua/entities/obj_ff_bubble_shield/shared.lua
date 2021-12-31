@@ -7,3 +7,4 @@ ENT.Purpose = "To protect the user."
 ENT.Instructions = "Stand under the shield for protection."
 ENT.Spawnable = true
 ENT.PrintName = "Bubble Shield"
+ENT.AutomaticFrameAdvance = true

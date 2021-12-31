@@ -3,7 +3,7 @@
 	$model 1
 	$refractamount 0.05
 	$bluramount 0
-	$refracttint "[1 1 1]"
+	$refracttint "[1.5 1.3 1]"
 	//$refracttinttexture  "models/hr/unsc/unsc_decals_diffuse"
 	$normalmap "models/hr/unsc/bubble_shield/bubble_shield_diff"
 	$normalmap2 "models/hr/unsc/bubble_shield/bubble_shield_nrml"

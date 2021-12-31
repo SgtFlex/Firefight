@@ -20,5 +20,6 @@ function ENT:ActivateEquipment()
     self.mine.owner = self.owner
     self.mine:Spawn()
     self.mine:SetPos(self.owner:GetPos() + self.owner:OBBCenter())
+    self.mine:SetAngles(self:GetForward():Angle() + Angle(0,90,0))
     self.mine:GetPhysicsObject():AddVelocity(self.owner:GetAimVector():GetNormalized()*400)
 end

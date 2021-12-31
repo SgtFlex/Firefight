@@ -10,3 +10,9 @@ $collisionmodel "Phys.smd" {
 	$concave
 	$maxconvexpieces 80
 }
+$texturegroup "Color"
+{
+	{"bubble_shield"}
+	{"bubble_shield_b"}
+	{"bubble_shield_y"}
+}

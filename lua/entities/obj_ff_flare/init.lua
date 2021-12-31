@@ -15,7 +15,7 @@ ENT.EffectDelay = 0.5
 ENT.EffectRadius = 200
 ENT.EffectTickRate = 0.1
 ENT.Skin = 3
-
+ENT.EffectPFX = "Flare"
 
 function ENT:EntityEffect(entity)
 end
