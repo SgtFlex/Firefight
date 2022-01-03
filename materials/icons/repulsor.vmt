@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/repulsor_diff"
+	"$translucent" 1
+}

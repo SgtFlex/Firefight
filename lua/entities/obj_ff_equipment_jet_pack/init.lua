@@ -7,7 +7,7 @@ include("entities/bases/obj_ff_equipment_base/init.lua")
 ENT.Model = "models/hr/unsc/equipment_jet_pack/equipment_jet_pack.mdl"
 ENT.KeyType = KeyTypes.HOLD
 ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
-ENT.ModelColor = Color(255,255,255,255)
+ENT.ModelColor = Color(125,125,125,255)
 
 
 local jetLoop 

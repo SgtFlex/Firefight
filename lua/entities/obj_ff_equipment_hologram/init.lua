@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 include("entities/bases/obj_ff_equipment_base/init.lua")
-ENT.ModelColor = Color(225, 255, 0, 255)
+ENT.ModelColor = Color(130, 150, 0, 255)
 ENT.toggledOn = false
 ENT.bubble = nil
 ENT.KeyType = KeyTypes.PRESS

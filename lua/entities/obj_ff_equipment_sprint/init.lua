@@ -4,7 +4,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 include("entities/bases/obj_ff_equipment_base/init.lua")
 
-ENT.ModelColor = Color(33, 255, 0, 255)
+ENT.ModelColor = Color(0, 150, 0, 255)
 ENT.KeyType = KeyTypes.HOLD
 ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 

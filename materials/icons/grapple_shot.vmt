@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "icons/grapple_shot_diff"
+	"$translucent" 1
+}

@@ -6,7 +6,7 @@ include("entities/bases/obj_ff_equipment_base/init.lua")
 
 util.AddNetworkString("Cloak")
 
-ENT.ModelColor = Color(0, 255, 255, 255)
+ENT.ModelColor = Color(0, 150, 150, 255)
 ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 ENT.KeyType = KeyTypes.TOGGLE
 local loopSound
