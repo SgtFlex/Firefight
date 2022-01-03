@@ -14,6 +14,7 @@ KeyTypes = {
 ENT.KeyType = KeyTypes.PRESS
 ENT.EquipmentActive = false
 
+
 local SndTbl_Collide = {
     "equipment/shared/drop/equipment_drop (1).wav",
     "equipment/shared/drop/equipment_drop (2).wav",

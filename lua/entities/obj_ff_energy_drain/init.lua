@@ -10,9 +10,9 @@ ENT.SoundTbl_Explode = {
     "equipment/regenerator/regenerator_expl/regenerator_expl3.wav",
 }
 ENT.SndTbl_Deploy = {
-    "equipment/energy_drain/in.wav",
+    "equipment/energy_drain/deploy.wav",
 }
-ENT.Snd_IdleLoop = "equipment/energy_drain/track1_loop.wav"
+ENT.Snd_IdleLoop = "equipment/energy_drain/deployed_loop.wav"
 ENT.EffectRadius = 200
 ENT.EffectDelay = 0.5
 ENT.EffectTickRate = 0.1

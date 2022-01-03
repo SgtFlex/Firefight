@@ -21,7 +21,7 @@ function ENT:ActivateEquipment()
     timer.Create("Fly"..self.owner:GetCreationID(), 0.1, 0, function()
         if (!self.owner) then return end
         if (self.owner:IsOnGround()) then
-            self.owner:SetPos(self.owner:GetPos() + Vector(0,0,6))
+            self.owner:SetPos(self.owner:GetPos() + Vector(0,0,0.5))
         end
         self.owner:SetVelocity(Vector(0,0,80))
     end)

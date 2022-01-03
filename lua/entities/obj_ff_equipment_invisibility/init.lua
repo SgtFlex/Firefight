@@ -4,13 +4,13 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 include("entities/bases/obj_ff_equipment_base/init.lua")
 
-util.AddNetworkString("Cloak")
-
-ENT.ModelColor = Color(0, 255, 255, 255)
-ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
-ENT.KeyType = KeyTypes.TOGGLE
-local loopSound
-
+ENT.Model = "models/hr/cov/equipment_bubble_shield/equipment_bubble_shield.mdl"
+ENT.KeyType = KeyTypes.PRESS
+ENT.ResourceRegen = 0.01
+ENT.ResourceCostInitial = 1
+ENT.ResourceMax = 1
+ENT.ResourceCur = ENT.ResourceMax
+ENT.Duration = 20
 
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
@@ -26,8 +26,11 @@ function ENT:ActivateEquipment()
     loopSound:Play()
     loopSound:ChangeVolume(0)
     loopSound:ChangeVolume(1, 2)
-    self.owner:SetDSP(31)
     self.owner:AddFlags(FL_NOTARGET)
+    timer.Simple(self.Duration, function()
+        self:DeactivateEquipment()
+        self:Remove()
+    end)
 end
 
 ENT.oldDeactivate = ENT.DeactivateEquipment
@@ -39,18 +42,9 @@ function ENT:DeactivateEquipment()
     self.owner:SetMaterial(self.owner.Mat)
     self.owner:DrawShadow(true)
     loopSound:ChangeVolume(0, 2)
-    self.owner:SetDSP(0)
     timer.Simple(2, function() 
         loopSound:Stop() 
     end)
     self.owner:RemoveFlags(FL_NOTARGET)
     self:EmitSound("equipment/cloak/invisibility_deactivate.wav")
-end
-
-function ENT:Think()
-    local oldVel = self:GetPhysicsObject():GetVelocity()
-    self:NextThink(CurTime())
-    self:GetPhysicsObject():SetVelocity(oldVel)
-    self:GetPhysicsObject():SetAngles(Angle(0, self:GetAngles().y, 0))
-    return true
 end

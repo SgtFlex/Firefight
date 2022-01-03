@@ -7,3 +7,4 @@ ENT.Purpose = "To cloak the user."
 ENT.Instructions = "Press the activate key to cloak the user. Press the activate key again to decloak the user."
 ENT.Spawnable = true
 ENT.PrintName = "Active Camo Equipment"
+ENT.AutomaticFrameAdvance = true

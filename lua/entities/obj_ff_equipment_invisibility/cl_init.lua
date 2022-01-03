@@ -1,6 +1,4 @@
 include( "shared.lua" )
-include("entities/bases/obj_ff_equipment_base/cl_init.lua")
-ENT.IconMat = Material( "icons/active_camo" )
 
 net.Receive("Cloak", function()
     local viewmodel = LocalPlayer():GetViewModel(0)
