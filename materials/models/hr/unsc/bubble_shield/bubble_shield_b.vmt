@@ -1,36 +1,8 @@
-"Refract"
+patch
 {
-	$model 1
-	$refractamount 0.05
-	$bluramount 0
-	$refracttint "[0.75 1 1.6]"
-	//$refracttinttexture  "models/hr/unsc/unsc_decals_diffuse"
-	$normalmap "models/hr/unsc/bubble_shield/bubble_shield_diff"
-	$normalmap2 "models/hr/unsc/bubble_shield/bubble_shield_nrml"
-	$color2 "[0 5 5]"
-	$cvar "[.62 .5]"
-	$svar "[10 5]"
-	$rvar -90
-	$tvar "[0 0]"
-	$nocull 0
-	$nowritez 0
-	$fadeoutonsilhouette 0
-
-	"Proxies"
+	include materials\models\hr\unsc\bubble_shield\bubble_shield.vmt
+	insert 
 	{
-	"LinearRamp"
-		{
-		"rate"	"-0.3"
-		"initialValue" "0"
-		"resultVar" "$tvar[1]"
-		}
-	"TextureTransform"
-		{
-		centerVar "$cvar"
-		scaleVar "$svar"
-		rotateVar "$rvar"
-		translateVar "$tvar"
-		resultVar "$bumptransform2"
-		}
+		$refracttint "[0.75 1 1.6]"
 	}
 }

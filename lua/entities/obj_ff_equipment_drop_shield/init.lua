@@ -22,30 +22,34 @@ function ENT:ActivateEquipment()
         self:EmitSound("equipment/bubble_shield/deploy_shield_in.wav")
         self.bubble.loopSound:Play()
         self.bubble.Initialize = function(self)
-            self:SetModelScale(0)
+            self:SetModel("models/hr/unsc/bubble_shield/bubble_shield.mdl")
+            self:SetMaxHealth(300)
+            self:SetHealth(self:GetMaxHealth())
+            -- self:SetModelScale(0) --Causes weird bugs
             self:SetModelScale(1, 0.65)
+            self:SetMoveType(MOVETYPE_VPHYSICS)
             self:PhysicsInit(SOLID_VPHYSICS)
+            self:SetSkin(1)
             self:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
             self:SetCustomCollisionCheck(true)
-            self:SetHealth(10)
-            self:SetColor(Color(255, 0, 0))
-            self:SetMaterial("effects/bubble_shield")
             self:DrawShadow(false)
             self:AddEFlags(EFL_DONTBLOCKLOS)
             self:CollisionRulesChanged()
-            hook.Add("ShouldCollide", "Bubble", function(ent1, ent2)
-                if ((ent1:IsNPC()) and (ent2==self)) or (ent1==self and ent2:IsNPC()) then
-                    print("Allow passage")
+            hook.Add("ShouldCollide", "BubbleCollisionCheck", function(ent1, ent2)
+                if (ent1:IsNPC() and ent2==self) or (ent1==self and ent2:IsNPC()) then
+                    PrintMessage(3, "No colliding "..tostring(ent1).." and "..tostring(ent2))
                     return false
                 end
             end)
             
             timer.Simple(10, function()
                 if (!IsValid(self)) then return end
-                self.loopSound:Stop()
-                self:EmitSound("equipment/bubble_shield/bubble_deativate.wav")
                 self:Remove()
             end)
+        end
+        self.bubble.OnRemove = function(self)
+            self.loopSound:Stop()
+            self:EmitSound("equipment/bubble_shield/bubble_deativate.wav")
         end
         self.bubble.OnTakeDamage = function(self, dmginfo)
             self:SetHealth(self:Health() - dmginfo:GetDamage())
@@ -55,14 +59,10 @@ function ENT:ActivateEquipment()
                 self:Remove()
             end
         end
-        self.bubble:SetModel("models/hr/unsc/bubble_shield/bubble_shield.mdl")
         self.bubble:SetPos(self.owner:GetPos())
         self.bubble:Spawn()
-        self.bubble:SetHealth(300)
-        self.bubble:SetMaxHealth(300)
         self.bubble:Activate()
         self.bubble:SetMoveType(MOVETYPE_NONE)
-        
     end)
     self.ResourceCur = self.ResourceCur - self.ResourceCostInitial
     timer.Create("Regen"..self:GetCreationID(), 0.1, (self.ResourceMax - self.ResourceCur)/0.1, function()

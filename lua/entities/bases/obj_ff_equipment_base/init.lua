@@ -122,6 +122,7 @@ end
 function ENT:Drop()
     self:DeactivateEquipment()
     self:SetParent(nil)
+    self:SetOwner(nil)
     self:SetSolid(SOLID_VPHYSICS)
     self:GetPhysicsObject():Wake()
     self:SetPos(self.owner:GetPos() + self.owner:OBBCenter())

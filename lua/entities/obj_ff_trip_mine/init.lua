@@ -21,6 +21,20 @@ ENT.ExplosionDamage = 100
 ENT.ExplosionRadius = 500
 ENT.Bodygroups = "01"
 
+ENT.prevInit = ENT.Initialize
+function ENT:Initialize()
+    self.prevInit(self)
+    self.light = ents.Create("light_dynamic")
+    self.light:SetPos(self:GetPos())
+    self.light:SetKeyValue("brightness", "4")
+    self.light:SetKeyValue("style", 0)
+    self.light:SetKeyValue("distance", "255")
+    self.light:SetKeyValue("_light", "255 150 0")
+    self.light:Spawn()
+    self.light:SetParent(self)
+    self:DeleteOnRemove(self.light)
+end
+
 function ENT:EntityEffect(entity)
     self:Explode()
 end
@@ -31,4 +45,10 @@ function ENT:Expire()
         if (!IsValid(self)) then return end
         self:Explode()
     end)
+end
+
+ENT.prevThink = ENT.Think
+
+function ENT:Think()
+    self.prevThink(self)    
 end

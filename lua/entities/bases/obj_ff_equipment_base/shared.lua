@@ -21,6 +21,7 @@ ENT.ResourceRegenDelay = 0.5
 if SERVER then
     function ENT:AttachToPlayer(player)
         self.owner = player
+        self:SetOwner(player)
         if (self.owner.HaloEquipment!=nil and self.owner.HaloEquipment.Drop!=nil) then self.owner.HaloEquipment:Drop() end
         if (self.Snd_EquipmentLoop) then self.Snd_EquipmentLoop:Stop() end
         self:EmitSound("equipment/shared/equipment_pickup.wav")
