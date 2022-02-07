@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user a Regenerator."
 ENT.Instructions = "Press the activate key to deploy a Regenerator."
 ENT.Spawnable = true
 ENT.PrintName = "Regenerator Equipment"
+ENT.ConVarName = "regenerator"

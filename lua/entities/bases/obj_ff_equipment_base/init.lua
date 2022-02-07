@@ -37,6 +37,7 @@ function ENT:Initialize()
     if (IsValid(self:GetPhysicsObject())) then
         self:GetPhysicsObject():Wake()
     end
+    self:UseConvars()
     self:CallOnRemove("RemoveJetpack", function(self) self:DeactivateEquipment() end)
 end
 

@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user Hologram."
 ENT.Instructions = "Press the activate key to send out a Hologram of the user to the pointed-at location."
 ENT.Spawnable = true
 ENT.PrintName = "Hologram Equipment"
+ENT.ConVarName = "hologram"

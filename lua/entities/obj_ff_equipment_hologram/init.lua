@@ -18,11 +18,17 @@ function ENT:ActivateEquipment()
         timer.Destroy("HoloDespawn"..self.holo:GetCreationID())
         self.holo:Remove() 
     end
-    self:EmitSound("equipment/hologram/holo_activate.wav")
+    local trace = util.TraceLine({
+        start = self:GetOwner():EyePos(),
+        endpos = self:GetOwner():EyePos() + self:GetOwner():GetAimVector()*10000,
+        filter = {self:GetOwner(), self},
+        ignoreworld = false,
+    })
     self.holo = ents.Create("equip_ent_hologram")
+    self.holo.endPos = trace.HitPos
     self.holo.Duration = 10
     self.holo:SetOwner(self:GetOwner())
     self.holo:SetPos(self:GetOwner():GetPos())
-    self.holo:SetAngles(self:GetOwner():GetAngles())
+    self.holo:SetAngles(Angle(0, self:GetOwner():EyeAngles().y, 0))
     self.holo:Spawn()
 end

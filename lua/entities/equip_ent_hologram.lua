@@ -1,7 +1,7 @@
 AddCSLuaFile() --For entities to appear clientside (such as the spawnmenu), this function must be used for this file to get sent to clients.
 
-ENT.Type = "nextbot"
-ENT.Base = "base_nextbot"
+ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
@@ -37,15 +37,18 @@ if SERVER then
 
     function ENT:Initialize()
         self:SetupMovement()
-        self:EmitSound("equipment/hologram/holo_activate.wav")
+        self:SetMoveType(MOVETYPE_STEP)
+        self:EmitSound("equipment/hologram/holo_activate.wav", 75, 100, 0.5)
         self:SetModel(self:GetOwner():GetModel())
         self:SetSkin(self:GetOwner():GetSkin())
         self:SetColor(self:GetOwner():GetColor())
         self:SetBodyGroups(self:GetOwner():GetBodyGroups())
         self:SetMaxHealth(self:GetOwner():GetMaxHealth())
         self:SetHealth(self:GetOwner():Health())
-        self:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
         self:AddFlags(FL_OBJECT)
+        self:SetSolid(SOLID_BBOX)
+        self:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+        self:SetCollisionBounds(Vector(-13,-13,0), Vector(13,13,72))
         self:ResetSequence(self:SelectWeightedSequence((self.AnimTbl_ACT["Idle"])))
         local gun = ents.Create("prop_dynamic")
         gun:SetModel(self:GetOwner():GetActiveWeapon():GetModel())
@@ -136,6 +139,12 @@ if SERVER then
     end
 
     function ENT:Think()
+        self:CalcSequence()
+        self:NextThink(CurTime())
+        return true
+    end
+
+    function ENT:CalcSequence()
         local speed = self:GetVelocity():Length()
         local maxSpeed = 200
         if (self:WaterLevel()>=2) then
@@ -146,43 +155,26 @@ if SERVER then
             end
             self:SetPoseParameter("move_x", speed)
         elseif (!self:IsOnGround()) then
-            self:StartActivity(self.AnimTbl_ACT["Jump"])
+            self:ResetSequence(self:SelectWeightedSequence((self.AnimTbl_ACT["Jump"])))
         else
-            local speed = self:GetVelocity():Length()
+            if (self.endPos) then
+                local pos2D = Vector(self:GetPos().x, self:GetPos().y, 0)
+                local endPos2D = Vector(self.endPos.x, self.endPos.y, 0)
+                if (pos2D:DistToSqr(endPos2D) > 500) then
+                    self:SetVelocity(self:GetForward()*27 + Vector(0,0,-10))
+                end
+            end
+
             if (speed==0) then
                 self:ResetSequence(self:SelectWeightedSequence((self.AnimTbl_ACT["Idle"])))
-            -- elseif (speed<=self:GetOwner():GetWalkSpeed()/2) then --Actually slow walking
-            --     maxSpeed = self:GetOwner():GetWalkSpeed()
-            --     print("walking")
-            --     self:ResetSequence(self:SelectWeightedSequence((self.AnimTbl_ACT["Walk"])))
+            elseif (speed<=self:GetOwner():GetWalkSpeed()/2) then --Actually slow walking
+                maxSpeed = self:GetOwner():GetWalkSpeed()
+                self:ResetSequence(self:SelectWeightedSequence((self.AnimTbl_ACT["Walk"])))
             else --Normal walking pace for players
                 maxSpeed = self:GetOwner():GetWalkSpeed()
                 self:ResetSequence(self:SelectWeightedSequence((self.AnimTbl_ACT["Run"])))
             end
             self:SetPoseParameter("move_x", speed/maxSpeed)
-        end
-    end
-
-    function ENT:RunBehaviour()
-        self.loco:SetAvoidAllowed(false)
-        self.loco:SetJumpGapsAllowed(false)
-        self.loco:SetDeathDropHeight(100000)
-        self.loco:SetClimbAllowed(false)
-        self.loco:SetAcceleration(1200)
-        self.loco:SetDesiredSpeed(self:GetOwner():GetWalkSpeed())
-        self.loco:SetStepHeight(25)
-        if (self:GetOwner()) then
-            local trace = util.TraceLine({
-                start = self:GetOwner():EyePos(),
-                endpos = self:GetOwner():EyePos() + self:GetOwner():GetAimVector()*10000,
-                filter = {self:GetOwner(), self},
-                ignoreworld = false,
-            })
-            debugoverlay.Line(self:GetOwner():EyePos(), self:GetOwner():EyePos() + self:GetOwner():GetAimVector()*1000, 5)
-            while (true) do
-                self:MoveToPos(trace.HitPos, {tolerance = 50})
-                coroutine.yield()
-            end
         end
     end
 

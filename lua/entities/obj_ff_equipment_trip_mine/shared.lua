@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user a Trip mine."
 ENT.Instructions = "Press the activate key to deploy a Trip mine."
 ENT.Spawnable = true
 ENT.PrintName = "Trip Mine Equipment"
+ENT.ConVarName = "trip_mine"

@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user a Portable Gravity Lift."
 ENT.Instructions = "Press the activate key to deploy a Portable Gravity Lift."
 ENT.Spawnable = true
 ENT.PrintName = "Portable Gravity Lift Equipment"
+ENT.ConVarName = "grav_lift"

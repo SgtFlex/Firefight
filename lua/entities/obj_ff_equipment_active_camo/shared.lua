@@ -8,3 +8,4 @@ ENT.Instructions = "Press the activate key to cloak the user. Press the activate
 ENT.Spawnable = true
 ENT.PrintName = "Active Camo Equipment"
 ENT.AutomaticFrameAdvance = true
+ENT.ConVarName = "active_camo"

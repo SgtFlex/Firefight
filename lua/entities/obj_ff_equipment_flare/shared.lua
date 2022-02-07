@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user a Flare."
 ENT.Instructions = "Press the activate key to deploy a Flare."
 ENT.Spawnable = true
 ENT.PrintName = "Flare Equipment"
+ENT.ConVarName = "flare"

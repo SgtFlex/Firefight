@@ -7,4 +7,4 @@ ENT.Purpose = "To give the user Armor lock."
 ENT.Instructions = "Press the activate key to activate Armor Lock. Release the activate key to deactivate Armor Lock."
 ENT.Spawnable = true
 ENT.PrintName = "Armor Lock Equipment"
-
+ENT.ConVarName = "armor_lock"

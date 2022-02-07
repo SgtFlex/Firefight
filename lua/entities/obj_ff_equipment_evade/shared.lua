@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user Evade."
 ENT.Instructions = "Press the activate key to Evade."
 ENT.Spawnable = true
 ENT.PrintName = "Evade Equipment"
+ENT.ConVarName = "evade"

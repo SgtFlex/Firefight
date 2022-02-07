@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user a Grapple Shot."
 ENT.Instructions = "Press the activate key to send out a Grapple Shot."
 ENT.Spawnable = true
 ENT.PrintName = "Grapple Shot Equipment"
+ENT.ConVarName = "grapple_shot"

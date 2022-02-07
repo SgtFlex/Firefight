@@ -8,17 +8,18 @@ ENT.Instructions = ""
 ENT.Spawnable = true
 ENT.PrintName = "Base Equipment"
 
-
-
-ENT.ResourceMax = 100
-ENT.ResourceCur = 100
-ENT.ResourceRegen = 5
-ENT.ResourceCostPerSec = 5
-ENT.ResourceCostInitial = 25
-ENT.ResourceTickRate = 0.1
-ENT.ResourceRegenDelay = 0.5
-
 if SERVER then
+    function ENT:UseConvars()
+        self.ResourceMax = GetConVar("h_"..self.ConVarName.."_resource_max"):GetFloat()
+        self.ResourceCur = self.ResourceMax
+        self.ResourceRegen = GetConVar("h_"..self.ConVarName.."_resource_regen"):GetFloat()
+        self.ResourceCostPerSec = GetConVar("h_"..self.ConVarName.."_resource_cps"):GetFloat()
+        self.ResourceCostInitial = GetConVar("h_"..self.ConVarName.."_resource_cost_initial"):GetFloat()
+        self.ResourceRegenDelay = GetConVar("h_"..self.ConVarName.."_resource_delay"):GetFloat()
+        self.ResourceTickRate = 0.1
+        
+    end
+
     function ENT:AttachToPlayer(player)
         self.owner = player
         self:SetOwner(player)

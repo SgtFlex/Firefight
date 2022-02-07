@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user an Energy Drain."
 ENT.Instructions = "Press the activate key to deploy an Energy Drain."
 ENT.Spawnable = true
 ENT.PrintName = "Energy Drain Equipment"
+ENT.ConVarName = "energy_drain"

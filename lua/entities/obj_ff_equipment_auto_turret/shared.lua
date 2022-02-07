@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user an Auto Turret."
 ENT.Instructions = "Press the activate key to deploy an Auto Turret."
 ENT.Spawnable = true
 ENT.PrintName = "Auto Turret Equipment"
+ENT.ConVarName = "auto_turret"

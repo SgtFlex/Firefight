@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user a Radar Jammer."
 ENT.Instructions = "Press the activate key to deploy a Radar Jammer."
 ENT.Spawnable = true
 ENT.PrintName = "Radar Jammer Equipment"
+ENT.ConVarName = "radar_jammer"

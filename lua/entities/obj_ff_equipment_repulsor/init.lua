@@ -16,6 +16,9 @@ ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
     if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     self:EmitSound("equipment/trip_mine/tripmine_explosion/tripmine_explosion1.wav")
+    if (!self:GetOwner():IsOnGround()) then
+        self:GetOwner():SetVelocity(self:GetOwner():GetAimVector():GetNormalized()*-750)
+    end
     local ents = ents.FindInCone(self.owner:EyePos(), self.owner:GetAimVector(), 500, math.cos( math.rad( 45 ) ))
     local tr = util.TraceLine({
         start = self.owner:EyePos(),

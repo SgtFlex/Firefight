@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user Sprint."
 ENT.Instructions = "Press the activate key to Sprint. Release the activate key to deactivate Sprint."
 ENT.Spawnable = true
 ENT.PrintName = "Sprint Equipment"
+ENT.ConVarName = "sprint"

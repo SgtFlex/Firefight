@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user Drop Shield."
 ENT.Instructions = "Press the activate key activate Drop Shield."
 ENT.Spawnable = true
 ENT.PrintName = "Drop Shield Equipment"
+ENT.ConVarName = "drop_shield"

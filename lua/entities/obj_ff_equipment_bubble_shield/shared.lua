@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user Bubble shield equipment."
 ENT.Instructions = "Press the activate key to drop a Bubble Shield."
 ENT.Spawnable = true
 ENT.PrintName = "Bubble Shield Equipment"
+ENT.ConVarName = "bubble_shield"
