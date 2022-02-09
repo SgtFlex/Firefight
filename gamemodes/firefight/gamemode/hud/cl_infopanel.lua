@@ -34,7 +34,7 @@ function InfoPanel:Paint( width, height )
 end
 
 function InfoPanel:DrawReinforcements()
-    if (!curReinf or !maxReinfl) then curReinf = -1 maxReinf = -1 end
+    if (!curReinf or !maxReinf) then return end
     surface.SetFont("ChatFont")
     surface.SetTextPos( size.w*.2, size.h*.65 ) 
     surface.SetTextColor(0, 200, 255)
@@ -42,14 +42,13 @@ function InfoPanel:DrawReinforcements()
 end
 
 function InfoPanel:DrawLives()
-    if (livesLeft==nil) then livesLeft = -1 end
     surface.SetFont("ChatFont")
     surface.SetTextPos( size.w*.05, size.h*.3 ) 
     surface.SetTextColor(0, 200, 255)
-    if livesLeft==-1 then
-        surface.DrawText("∞")
-    else
+    if livesLeft then
         surface.DrawText(livesLeft)
+    else
+        surface.DrawText("∞")
     end
     surface.SetDrawColor(255, 255, 255, 255)
     surface.SetMaterial(livesIcon)
@@ -57,7 +56,7 @@ function InfoPanel:DrawLives()
 end
 
 function InfoPanel:DrawSets()
-    if (curSet==nil or maxSet==nil) then maxSet = -1 curSet = -1 end
+    if (!curSet or !maxSet) then return end
     surface.SetFont("ChatFont")
     surface.SetTextPos( size.w*.2, size.h*.45 ) 
     surface.SetTextColor(0, 200, 255)

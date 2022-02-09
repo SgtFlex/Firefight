@@ -16,7 +16,8 @@ ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
     if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     self.shield = ents.Create("obj_ff_bubble_shield")
-    self.shield.Duration = 15
+    self.shield.Duration = self.DeployableDuration
+    self.shield.StartHealth = self.DeployableHealth
     self.shield:SetPos(self.owner:GetPos() + self.owner:OBBCenter())
     self.shield.owner = self.owner
     self.shield:Spawn()

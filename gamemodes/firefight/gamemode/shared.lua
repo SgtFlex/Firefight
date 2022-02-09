@@ -254,7 +254,7 @@ function StartReinforcement()
 					if (weaponTable!= nil and #weaponTable > 0) then
 						npc:Give(weaponTable[math.random(1, #weaponTable)])
 					end
-					npc:SetCollisionGroup(3)
+					npc:SetCollisionGroup(1)
 					table.insert(StartReinforcements, npc)
 					table.insert(AliveReinforcements, npc)
 					bank = bank - chosenNPC["Cost"]

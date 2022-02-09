@@ -10,20 +10,20 @@ ENT.bubble = nil
 ENT.KeyType = KeyTypes.PRESS
 ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 
-
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
     if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
     if (!self.owner:IsOnGround()) then return end
     self:EmitSound("equipment/bubble_shield/deploy_shield.wav")
     self.bubble = ents.Create("base_gmodentity")
+    self.bubble:SetOwner(self)
     self.bubble.loopSound = CreateSound(self.bubble, "equipment/bubble_shield/deploy_shield_loop.wav")
     timer.Simple(0.5, function()
         self:EmitSound("equipment/bubble_shield/deploy_shield_in.wav")
         self.bubble.loopSound:Play()
         self.bubble.Initialize = function(self)
             self:SetModel("models/hr/unsc/bubble_shield/bubble_shield.mdl")
-            self:SetMaxHealth(300)
+            self:SetMaxHealth(self:GetOwner().DeployableHealth)
             self:SetHealth(self:GetMaxHealth())
             -- self:SetModelScale(0) --Causes weird bugs
             self:SetModelScale(1, 0.65)
@@ -42,7 +42,7 @@ function ENT:ActivateEquipment()
                 end
             end)
             
-            timer.Simple(10, function()
+            timer.Simple(self:GetOwner().DeployableDuration, function()
                 if (!IsValid(self)) then return end
                 self:Remove()
             end)

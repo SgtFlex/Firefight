@@ -17,6 +17,9 @@ if SERVER then
         self.ResourceCostInitial = GetConVar("h_"..self.ConVarName.."_resource_cost_initial"):GetFloat()
         self.ResourceRegenDelay = GetConVar("h_"..self.ConVarName.."_resource_delay"):GetFloat()
         self.ResourceTickRate = 0.1
+
+        self.DeployableDuration = GetConVar("h_"..self.ConVarName.."_duration"):GetFloat()
+        self.DeployableHealth = GetConVar("h_"..self.ConVarName.."_health"):GetFloat()
         
     end
 

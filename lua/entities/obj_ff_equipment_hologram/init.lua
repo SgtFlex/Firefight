@@ -26,7 +26,7 @@ function ENT:ActivateEquipment()
     })
     self.holo = ents.Create("equip_ent_hologram")
     self.holo.endPos = trace.HitPos
-    self.holo.Duration = 10
+    self.holo.Duration = self.DeployableDuration
     self.holo:SetOwner(self:GetOwner())
     self.holo:SetPos(self:GetOwner():GetPos())
     self.holo:SetAngles(Angle(0, self:GetOwner():EyeAngles().y, 0))

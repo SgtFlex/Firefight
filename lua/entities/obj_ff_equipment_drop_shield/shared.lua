@@ -8,3 +8,8 @@ ENT.Instructions = "Press the activate key activate Drop Shield."
 ENT.Spawnable = true
 ENT.PrintName = "Drop Shield Equipment"
 ENT.ConVarName = "drop_shield"
+
+ENT.oldConvar = ENT.UseConvars
+function ENT:UseConvars()
+    self.oldConvar(self)
+end
