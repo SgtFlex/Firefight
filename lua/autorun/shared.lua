@@ -4,25 +4,43 @@ PrecacheParticleSystem("Gravity_Lift")
 
 local ConVar_Tbl = include("includes/convars.lua")
 
-for equipName, equipConvars in pairs(ConVar_Tbl) do
-    for _, equipConvar in pairs(equipConvars) do
-        CreateConVar(equipConvar["convar"], equipConvar["default"], FCVAR_ARCHIVE, equipConvar["tooltip"])
-    end
+-- for nodeName, nodeInfo in pairs(ConVar_Tbl) do
+--     for _, control in pairs(nodeInfo["controls"]) do
+--         CreateConVar(control["convar"], control["default"], FCVAR_ARCHIVE, control["desc"])
+--     end
+-- end
+
+
+function SetupDefaultConvars(tbl_nodes)
+	for k, node in pairs(tbl_nodes) do
+        if (node["controls"]!=nil) then
+            for j, control in pairs(node["controls"]) do
+                if (control["convar"]!=nil) then
+                    CreateConVar(control["convar"], control["default"], FCVAR_ARCHIVE, control["desc"])
+                end
+            end
+        end
+        if (node["subtree"]!=nil) then
+            SetupDefaultConvars(node["subtree"])
+        end
+	end
 end
 
-concommand.Add("h_equip_settings", function(ply)
-    net.Start("HaloEquipmentMsg")
+SetupDefaultConvars(ConVar_Tbl)
+
+concommand.Add("settings_panel", function(ply)
+    net.Start("SettingsPanel")
     net.Send(ply)
 end)
 
-hook.Add("PlayerSay", "swc_settings_chat", function(sender, text, teamChat)
-    if (text=="!h_equip_settings") then
-        sender:ConCommand("h_equip_settings")
+hook.Add("PlayerSay", "settings_panel", function(sender, text, teamChat)
+    if (text=="!settings_panel") then
+        sender:ConCommand("settings_panel")
         return ""
     end
 end)
 
 if SERVER then
-    util.AddNetworkString("HaloEquipmentMsg")
+    util.AddNetworkString("SettingsPanel")
     AddCSLuaFile("client/cl_init.lua")
 end
