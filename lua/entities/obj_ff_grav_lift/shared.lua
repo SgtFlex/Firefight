@@ -8,3 +8,4 @@ ENT.Instructions = "Use to displace entities."
 ENT.Spawnable = true
 ENT.PrintName = "Portable Gravity Lift"
 ENT.AutomaticFrameAdvance = true
+ENT.ConVarName = "grav_lift"

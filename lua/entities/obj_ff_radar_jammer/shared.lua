@@ -7,3 +7,4 @@ ENT.Purpose = "To blind foes."
 ENT.Instructions = "Use on enemies to jam radar systems."
 ENT.Spawnable = true
 ENT.PrintName = "Radar Jammer"
+ENT.ConVarName = "radar_jammer"

@@ -24,6 +24,13 @@ ENT.LoopAnimation = "spin"
 ENT.HealthPerTick = 3
 ENT.ArmorPerTick = 3
 
+local oldConvars = ENT.UseConvars
+function ENT:UseConvars()
+    oldConvars(self)
+    self.ArmorPerTick = GetConVar("h_regenerator_aps"):GetFloat()
+    self.HealthPerTick = GetConVar("h_regenerator_hps"):GetFloat()
+end
+
 ENT.LastRun = 0
 function ENT:Think()
     if (CurTime() >= self.LastRun + self.EffectTickRate) then

@@ -8,3 +8,4 @@ ENT.Instructions = "Use on allies to replenish health and shields."
 ENT.Spawnable = true
 ENT.PrintName = "Regenerator"
 ENT.AutomaticFrameAdvance = true
+ENT.ConVarName = "regenerator"

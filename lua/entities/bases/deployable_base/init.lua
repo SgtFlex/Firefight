@@ -30,6 +30,8 @@ ENT.DeployAnimation = nil
 
 
 function ENT:Initialize()
+    
+    self:UseConvars()
     self:SetModel(self.Model)
     if (self.Skin!=nil) then self:SetSkin(self.Skin) end
     if (self.Bodygroups!=nil) then self:SetBodyGroups(self.Bodygroups) end
@@ -58,6 +60,15 @@ function ENT:Initialize()
     end
 end
 
+function ENT:UseConvars()
+    self.StartHealth = GetConVar("h_"..self.ConVarName.."_health"):GetFloat()
+    self.EffectRadius = GetConVar("h_"..self.ConVarName.."_effect_radius"):GetFloat()
+    self.EffectDelay = GetConVar("h_"..self.ConVarName.."_effect_delay"):GetFloat()
+    self.EffectTickRate = GetConVar("h_"..self.ConVarName.."_effect_tick"):GetFloat()
+    self.ExplosionDamage = GetConVar("h_"..self.ConVarName.."_expl_damage"):GetFloat()
+    self.ExplosionRadius = GetConVar("h_"..self.ConVarName.."_expl_radius"):GetFloat()
+end
+
 function ENT:Explode()
     if (self.ExplosionDamage > 0) then
         local dmginfo = DamageInfo()
@@ -65,6 +76,11 @@ function ENT:Explode()
         dmginfo:SetDamage(self.ExplosionDamage)
         dmginfo:SetInflictor(self)
         util.BlastDamageInfo(dmginfo, self:GetPos(), self.ExplosionRadius)
+        for _, obj in pairs(ents.FindInSphere(self:GetPos(), self.ExplosionRadius)) do
+            if IsValid(obj:GetPhysicsObject()) then
+                obj:GetPhysicsObject():ApplyForceCenter((obj:GetPos() - self:GetPos())/self.ExplosionRadius*self.ExplosionDamage*2000)
+            end
+        end
     end
     ParticleEffect("Equipment_destroy", self:GetPos(), Angle(0,0,0))
     util.ScreenShake(self:GetPos(), 600, 600, 1.5, 600)
@@ -98,18 +114,22 @@ end
 function ENT:EntityEffect(entity)
 end
 
+
 function ENT:OnTakeDamage(dmginfo)
     if dmginfo:GetInflictor()==self then return end
     self:SetHealth(self:Health() - dmginfo:GetDamage())
     if self:Health() <= 0 then
-        self:Explode()
+        timer.Simple(0.5, function()
+            if IsValid(self) then
+                self:Explode()
+            end
+        end)
     end
 end
 
 function ENT:PhysicsCollide(colData, collider)
-    if (colData.Speed > 50) then
-        self:EmitSound(self.SndTbl_Collide[math.random(1, #self.SndTbl_Collide)])
-    elseif (colData.Speed > 500) then
-        self:TakeDamage(self.StartHealth)
-    end
+    local colForce = math.abs((((colData.OurOldVelocity:Dot(colData.HitNormal))*(colData.OurOldVelocity:Length()))/100000))
+    self:TakeDamage(math.floor(colForce))
+    self:EmitSound(self.SndTbl_Collide[math.random(1, #self.SndTbl_Collide)], 75, math.random(75, 140), colForce/1)
+    print(colForce)
 end

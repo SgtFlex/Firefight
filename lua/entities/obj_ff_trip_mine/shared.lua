@@ -7,3 +7,4 @@ ENT.Purpose = "To lay a trap."
 ENT.Instructions = "Step on the mine and see what happens!"
 ENT.Spawnable = true
 ENT.PrintName = "Trip Mine"
+ENT.ConVarName = "trip_mine"

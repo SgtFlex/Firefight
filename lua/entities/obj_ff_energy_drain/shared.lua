@@ -7,3 +7,4 @@ ENT.Purpose = "To EMP items."
 ENT.Instructions = "Use on foes to drain shields or deactivate vehicles!"
 ENT.Spawnable = true
 ENT.PrintName = "Energy Drain"
+ENT.ConVarName = "energy_drain"

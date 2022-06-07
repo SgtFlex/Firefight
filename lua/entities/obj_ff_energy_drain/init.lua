@@ -2,7 +2,6 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 include("entities/bases/deployable_base/init.lua")
-
 ENT.Model = "models/hr/cov/equipment_power_drain/equipment_power_drain.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/regenerator/regenerator_expl/regenerator_expl1.wav",
@@ -22,8 +21,16 @@ ENT.ExplosionRadius = ENT.EffectRadius
 ENT.Skin = 1
 
 ENT.DrainDamage = 10
+local oldConvars = ENT.UseConvars
+function ENT:UseConvars()
+    oldConvars(self)
+    self.DrainDamage = GetConVar("h_energy_drain_dps"):GetFloat()
+end
+
 function ENT:EntityEffect(entity)
-    if (entity:Armor() > 0) then
+    if (entity.Armor and entity:Armor() > 0) then
         entity:TakeDamage(math.min(self.DrainDamage, entity:Armor()), self:GetOwner(), self)
+    elseif (entity.ShieldCurrentHealth > 0) then
+        entity:TakeDamage(math.min(self.DrainDamage, entity.ShieldCurrentHealth), self:GetOwner(), self)
     end
 end

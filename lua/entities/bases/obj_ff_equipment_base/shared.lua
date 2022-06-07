@@ -34,7 +34,7 @@ if SERVER then
         self:SetSolid(SOLID_NONE)
         self:SetNoDraw(true)
         hook.Add("PlayerButtonDown", "EquipmentKeyPressed", function(player, button)
-            if (player==self.owner) and (button == KEY_T) and IsValid(self) then
+            if (player==self.owner) and (button == GetConVar("he_equipment_bind"):GetInt()) and IsValid(self) then
                 if (self.KeyType==KeyTypes.TOGGLE and self.EquipmentActive==true) then --If the keyType is toggle and it's active, deactivate the effect
                     self:DeactivateEquipment()
                 else

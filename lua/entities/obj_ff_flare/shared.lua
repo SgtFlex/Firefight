@@ -7,3 +7,4 @@ ENT.Purpose = "To blind foes."
 ENT.Instructions = "Use on enemies to blind them."
 ENT.Spawnable = true
 ENT.PrintName = "Flare"
+ENT.ConVarName = "flare"

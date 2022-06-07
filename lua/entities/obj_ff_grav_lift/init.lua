@@ -22,6 +22,13 @@ ENT.LoopAnimation = "idle_deployed"
 
 ENT.LastLiftSound = 0
 ENT.LastActivateTime = 0
+
+local oldConvars = ENT.UseConvars
+function ENT:UseConvars()
+    oldConvars(self)
+    self.LiftPower = GetConVar("h_grav_lift_power"):GetFloat()
+end
+
 function ENT:Think()
     if (CurTime() > self.activateTime and CurTime() > self.LastActivateTime + self.EffectTickRate) then
         self.LastActivateTime = CurTime()
@@ -48,10 +55,10 @@ function ENT:EntityEffect(entity)
         if (entity:IsOnGround()) then
             entity:SetPos(entity:GetPos() + Vector(0,0,6))
         end
-        entity:SetVelocity(self:GetUp()*200)
+        entity:SetVelocity(self:GetUp()*self.LiftPower)
     elseif (entity:IsNPC()) then
-        entity:SetVelocity(self:GetUp()*200)
+        entity:SetVelocity(self:GetUp()*self.LiftPower)
     elseif (IsValid(entity) and IsValid(entity:GetPhysicsObject())) then
-        entity:GetPhysicsObject():AddVelocity(self:GetUp()*200)
+        entity:GetPhysicsObject():AddVelocity(self:GetUp()*self.LiftPower)
     end
 end
