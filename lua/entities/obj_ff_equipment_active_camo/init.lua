@@ -1,20 +1,16 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-
 include("shared.lua")
-include("entities/bases/obj_ff_equipment_base/init.lua")
 
 util.AddNetworkString("Cloak")
+ENT.Model = "models/hr/unsc/equipment/equipment.mdl"
 
 ENT.ModelColor = Color(0, 150, 150, 255)
 ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 ENT.KeyType = KeyTypes.TOGGLE
-local loopSound
+local loopSound = nil
 
-
-ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
-    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
+    self.BaseClass.ActivateEquipment(self)
     net.Start("Cloak")
     net.WriteBool(self.EquipmentActive)
     net.Send(self.owner)
@@ -32,7 +28,7 @@ end
 
 ENT.oldDeactivate = ENT.DeactivateEquipment
 function ENT:DeactivateEquipment()
-    if self.oldDeactivate(self)==false then return end
+    self.BaseClass.DeactivateEquipment(self)
     net.Start("Cloak")
     net.WriteBool(self.EquipmentActive)
     net.Send(self.owner)

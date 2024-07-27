@@ -1,8 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-
 include("shared.lua")
-include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.Model = "models/hr/unsc/equipment_jet_pack/equipment_jet_pack.mdl"
 ENT.KeyType = KeyTypes.HOLD
@@ -10,10 +7,9 @@ ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 ENT.ModelColor = Color(125,125,125,255)
 
 
-local jetLoop 
-ENT.oldActivate = ENT.ActivateEquipment
+local jetLoop = nil
 function ENT:ActivateEquipment()
-    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
+    self.BaseClass.ActivateEquipment(self)
     jetLoop = CreateSound(self, "equipment/jet_pack/jet_loop1.wav")
     jetLoop:Play()
     self:EmitSound("equipment/jet_pack/jet_in.wav")
@@ -29,9 +25,9 @@ end
 
 ENT.oldDeactivate = ENT.DeactivateEquipment
 function ENT:DeactivateEquipment()
-    if self.oldDeactivate(self)==false then return end
+    self.BaseClass.DeactivateEquipment(self)
     if (!self.owner) then return end
-    jetLoop:Stop()
+    if (jetLoop) then jetLoop:Stop() end
     self:EmitSound("equipment/jet_pack/jet_out.wav")
     timer.Destroy("Fly"..self.owner:GetCreationID())
 end

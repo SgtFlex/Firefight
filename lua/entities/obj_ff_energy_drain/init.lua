@@ -1,7 +1,6 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/deployable_base/init.lua")
+
 ENT.Model = "models/hr/cov/equipment_power_drain/equipment_power_drain.mdl"
 ENT.SoundTbl_Explode = {
     "equipment/regenerator/regenerator_expl/regenerator_expl1.wav",
@@ -23,7 +22,7 @@ ENT.Skin = 1
 ENT.DrainDamage = 10
 local oldConvars = ENT.UseConvars
 function ENT:UseConvars()
-    oldConvars(self)
+    self.BaseClass.UseConvars(self)
     self.DrainDamage = GetConVar("h_energy_drain_dps"):GetFloat()
 end
 

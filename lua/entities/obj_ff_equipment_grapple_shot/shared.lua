@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "obj_ff_equipment_base"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
@@ -8,3 +8,4 @@ ENT.Instructions = "Press the activate key to send out a Grapple Shot."
 ENT.Spawnable = true
 ENT.PrintName = "Grapple Shot Equipment"
 ENT.ConVarName = "grapple_shot"
+ENT.IconMat = Material( "icons/grapple_shot.vmt" )

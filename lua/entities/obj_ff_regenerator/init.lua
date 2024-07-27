@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/deployable_base/init.lua")
 
 ENT.Model = "models/hr/cov/equipment_regenerator/equipment_regenerator.mdl"
 ENT.SoundTbl_Explode = {
@@ -24,9 +22,8 @@ ENT.LoopAnimation = "spin"
 ENT.HealthPerTick = 3
 ENT.ArmorPerTick = 3
 
-local oldConvars = ENT.UseConvars
 function ENT:UseConvars()
-    oldConvars(self)
+    self.BaseClass.UseConvars(self)
     self.ArmorPerTick = GetConVar("h_regenerator_aps"):GetFloat()
     self.HealthPerTick = GetConVar("h_regenerator_hps"):GetFloat()
 end
@@ -35,7 +32,7 @@ ENT.LastRun = 0
 function ENT:Think()
     if (CurTime() >= self.LastRun + self.EffectTickRate) then
         self.LastRun = CurTime()
-        if (CurTime() > self.activateTime) then
+        if (CurTime() > self.ActivateTime) then
             for k, v in pairs(ents.FindInSphere(self:GetPos(), self.EffectRadius)) do
                 self:EntityEffect(v)
             end

@@ -1,7 +1,7 @@
 
 local MarkerPanel = {}
 local ScrBound = 0.1
-local pos = {x = `, y = ScrH()*ScrBound}
+local pos = {x = ScrH() - pos.y*2, y = ScrH()*ScrBound}
 local size = {w = ScrW() - pos.x*2, h = ScrH() - pos.y*2}
 local ourMat = Material( "hud/hud_marker" )
 local markedEnts = {}

@@ -1,7 +1,7 @@
 AddCSLuaFile() --For entities to appear clientside (such as the spawnmenu), this function must be used for this file to get sent to clients.
 
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "base_entity"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
@@ -36,6 +36,7 @@ if SERVER then
     end
 
     function ENT:Initialize()
+        if (!self:GetOwner()) then self:SetOwner(self:GetCreator()) end
         self:SetupMovement()
         self:SetMoveType(MOVETYPE_STEP)
         self:EmitSound("equipment/hologram/holo_activate.wav", 75, 100, 0.5)
@@ -58,11 +59,6 @@ if SERVER then
         gun:Fire("SetParentAttachment","anim_attachment_RH")
         gun:FollowBone(self, 31)
         gun:AddEffects(EF_BONEMERGE)
-        print("Player:                      "..tostring(self:GetOwner()))
-        print("Player's weapon:             "..tostring(self:GetOwner():GetActiveWeapon()))
-        print("Weapon's parent:             "..tostring(self:GetOwner():GetActiveWeapon():GetParent()))
-        print("Weapon's parent attachment:  "..tostring(self:GetOwner():GetActiveWeapon():GetParentAttachment()))
-        print("Weapon's effect bitflag:     "..tostring(self:GetOwner():GetActiveWeapon():GetEffects()))
         -- --Attach whatever's attached to the player, also to the hologram
         -- for _, v in pairs(self:GetOwner():GetChildren()) do
         --     ent = ents.Create(v:GetClass())

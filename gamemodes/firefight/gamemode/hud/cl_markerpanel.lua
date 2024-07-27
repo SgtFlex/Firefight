@@ -1,27 +1,27 @@
 
 local MarkerPanel = {}
 local ScrBound = 0.1
-local pos = {x = `, y = ScrH()*ScrBound}
+local pos = {x = ScrW()*ScrBound , y = ScrH()*ScrBound}
 local size = {w = ScrW() - pos.x*2, h = ScrH() - pos.y*2}
 local ourMat = Material( "hud/hud_marker" )
 local markedEnts = {}
 
 function MarkerPanel:Init()    
-    self:SetPos(pos.x, pos.y)
-    self:SetSize(size.w, size.h)
+    self:SetPos(0, 0)
+    self:SetSize(ScrW(), ScrH())
+
+    hook.Add("HUDPaint", "DrawHUDMarkers", function()
+        self:DrawMarkers()
+    end)
 end
 
 
 function MarkerPanel:Paint( width, height )
-    pos.x = ScrW()*ScrBound
-    pos.y = ScrH()*ScrBound
-    size.w = width
-    size.h = height
-    self:SetPos(pos.x, pos.y)
-    self:SetSize(size.w, size.h)
+    self:SetPos(0,0)
+    self:SetSize(ScrW(), ScrH())
 
-    self:DrawMarkers()
-    draw.RoundedBox(0, 0, 0, width, height, Color(0,0,0,30))
+    --self:DrawMarkers()
+    --draw.RoundedBox(0, 0, 0, width, height, Color(0,0,0,30))
 end
 
 local iconSize = {x = 48, y = 48}
@@ -32,6 +32,7 @@ function MarkerPanel:DrawMarkers()
         local point = v[1]:GetPos() + v[1]:OBBCenter()*3 -- Gets the position of the entity, specifically the center
         
         local data2D = point:ToScreen() -- Gets the position of the entity on your screen
+        debugoverlay.Cross(point, 300, 1)
         data2D.x, data2D.y = self:ScreenToLocal(data2D.x, data2D.y)
         local data2DUnclamped = data2D
         data2D.x = math.Clamp(data2D.x, 0 , size.w - iconSize.x)
@@ -66,19 +67,15 @@ function MarkerPanel:DrawMarkers()
 end
 
 function AddToDisplayList(ent, displayName, icon, textColor)
-    print(tostring(ent))
     if (!table.HasValue(markedEnts, ent)) then
         table.insert(markedEnts, {ent,displayName,Material(icon),textColor})
-        print(tostring(ent).." added")
     end
 end
 
 function RemoveFromDisplayList(ent)
-    print("To remove: "..tostring(ent))
     for k, v in pairs(markedEnts) do
         print(v.Entity)
         if (v[1] == ent) then
-            print("Removed!")
             table.remove(markedEnts, k)
             break
         end

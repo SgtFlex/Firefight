@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "base_entity"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"

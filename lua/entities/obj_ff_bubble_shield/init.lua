@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/deployable_base/init.lua")
 
 ENT.Model = "models/hr/cov/equipment_bubble_shield/equipment_bubble_shield.mdl"
 ENT.SndTbl_Deploy = {
@@ -17,20 +15,20 @@ ENT.LoopAnimation = "spin"
 ENT.bubble = nil
 local oldInit = ENT.Initialize
 function ENT:Initialize()
-    oldInit(self)
+    self.BaseClass.Initialize(self)
     self:SpawnShield()
 end
 
 local oldRemove = ENT.OnRemove
 function ENT:OnRemove()
-    oldRemove(self)
+    self.BaseClass.OnRemove(self)
     self:EmitSound("equipment/bubble_shield/bubble_deativate.wav")
     ParticleEffect("Bubble_destroy", self.bubble:GetPos(), Angle(0,0,0))
     self.bubble:Remove()    
 end
 
 function ENT:SpawnShield()
-    self.bubble = ents.Create("base_gmodentity")
+    self.bubble = ents.Create("base_entity")
     self.bubble.Initialize = function(self)
         self:SetModel("models/hr/unsc/bubble_shield/bubble_shield.mdl")
         self:SetMoveType(MOVETYPE_VPHYSICS)

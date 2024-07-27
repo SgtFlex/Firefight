@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/deployable_base/init.lua")
 
 ENT.Model = "models/hunter/plates/plate.mdl"
 ENT.SoundTbl_Explode = {
@@ -17,7 +15,7 @@ ENT.EffectTickRate = 0.1
 util.AddNetworkString("GrappleHit")
 local oldInit = ENT.Initialize
 function ENT:Initialize()
-    oldInit(self)
+    self.BaseClass.Initialize(self)
     self:SetOwner(self.owner)
     self:GetPhysicsObject():EnableGravity(false)
     self:GetPhysicsObject():EnableDrag(false)   

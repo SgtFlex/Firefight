@@ -1,7 +1,6 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-
 include("shared.lua")
+
 util.AddNetworkString("AddEquipmentIcon")
 ENT.owner = nil
 
@@ -13,7 +12,13 @@ KeyTypes = {
 }
 ENT.KeyType = KeyTypes.PRESS
 ENT.EquipmentActive = false
-
+ENT.ResourceMax = 100
+ENT.ResourceCur = ENT.ResourceMax
+ENT.ResourceRegen = 5
+ENT.ResourceCostPerSec = 5
+ENT.ResourceCostInitial = 25
+ENT.ResourceRegenDelay = 0.5
+ENT.ResourceTickRate = 0.1
 
 local SndTbl_Collide = {
     "equipment/shared/drop/equipment_drop (1).wav",
@@ -39,6 +44,17 @@ function ENT:Initialize()
     end
     self:UseConvars()
     self:CallOnRemove("RemoveJetpack", function(self) self:DeactivateEquipment() end)
+end
+
+function ENT:UseConvars()
+    if (!self.ConVarName) then return end
+    self.ResourceMax = GetConVar("h_"..self.ConVarName.."_resource_max"):GetFloat()
+    self.ResourceCur = self.ResourceMax
+    self.ResourceRegen = GetConVar("h_"..self.ConVarName.."_resource_regen"):GetFloat()
+    self.ResourceCostPerSec = GetConVar("h_"..self.ConVarName.."_resource_cps"):GetFloat()
+    self.ResourceCostInitial = GetConVar("h_"..self.ConVarName.."_resource_cost_initial"):GetFloat()
+    self.ResourceRegenDelay = GetConVar("h_"..self.ConVarName.."_resource_delay"):GetFloat()
+    self.ResourceTickRate = 0.1  
 end
 
 function ENT:PhysicsCollide(colData, collider)

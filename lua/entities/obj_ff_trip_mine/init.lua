@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/deployable_base/init.lua")
 
 ENT.Model = "models/hr/unsc/equipment_trip_mine/equipment_trip_mine.mdl"
 ENT.SoundTbl_Explode = {
@@ -21,9 +19,8 @@ ENT.ExplosionDamage = 100
 ENT.ExplosionRadius = 500
 ENT.Bodygroups = "01"
 
-ENT.prevInit = ENT.Initialize
 function ENT:Initialize()
-    self.prevInit(self)
+    self.BaseClass.Initialize(self)
     self.light = ents.Create("light_dynamic")
     self.light:SetPos(self:GetPos())
     self.light:SetKeyValue("brightness", "4")
@@ -47,8 +44,6 @@ function ENT:Expire()
     end)
 end
 
-ENT.prevThink = ENT.Think
-
 function ENT:Think()
-    self.prevThink(self)    
+    self.BaseClass.Think(self)
 end

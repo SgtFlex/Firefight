@@ -1,10 +1,12 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "deployable_base"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
 ENT.Purpose = "To lay a trap."
 ENT.Instructions = "Step on the mine and see what happens!"
 ENT.Spawnable = true
+ENT.AutomaticFrameAdvance = true
 ENT.PrintName = "Trip Mine"
 ENT.ConVarName = "trip_mine"
+ENT.RenderGroup = RENDERGROUP_BOTH

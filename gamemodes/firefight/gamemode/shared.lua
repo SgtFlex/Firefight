@@ -245,7 +245,7 @@ function StartReinforcement()
 					while chosenNPC["Cost"] > maxCost do --deplete the bank as much as we can
 						chosenNPC = v["NPCs"][math.random(1, #v["NPCs"])]
 					end
-					local npc = ents.Create(chosenNPC["NPC"])
+					local npc = ents.Create("dropship_halo_cov_spv3_phantom")
 					
 
 					npc:SetPos(GetSpawnablePosition())

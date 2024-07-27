@@ -1,7 +1,7 @@
 AddCSLuaFile() --For entities to appear clientside (such as the spawnmenu), this function must be used for this file to get sent to clients.
 
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "base_entity"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"

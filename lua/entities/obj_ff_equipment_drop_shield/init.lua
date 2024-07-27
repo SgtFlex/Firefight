@@ -1,8 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-
 include("shared.lua")
-include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.ModelColor = Color(0, 161, 255, 255)
 ENT.toggledOn = false
@@ -12,10 +9,10 @@ ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
-    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
+    self.BaseClass.ActivateEquipment(self)
     if (!self.owner:IsOnGround()) then return end
     self:EmitSound("equipment/bubble_shield/deploy_shield.wav")
-    self.bubble = ents.Create("base_gmodentity")
+    self.bubble = ents.Create("base_entity")
     self.bubble:SetOwner(self)
     self.bubble.loopSound = CreateSound(self.bubble, "equipment/bubble_shield/deploy_shield_loop.wav")
     timer.Simple(0.5, function()

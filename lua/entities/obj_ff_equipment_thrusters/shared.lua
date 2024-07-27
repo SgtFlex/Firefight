@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "obj_ff_equipment_base"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
@@ -7,3 +7,4 @@ ENT.Purpose = "To give the user Thrusters."
 ENT.Instructions = "Press the activate key to Thrust."
 ENT.Spawnable = true
 ENT.PrintName = "Thruster Equipment"
+ENT.IconMat = Material( "icons/evade.vmt" )

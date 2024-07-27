@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.Model = "models/hr/unsc/equipment/equipment.mdl"
 ENT.ModelColor = Color(0, 150, 150, 255)

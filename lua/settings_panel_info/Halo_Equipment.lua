@@ -23,6 +23,7 @@ return {
                         ["Resource Max"] = {
                             convar = "h_active_camo_resource_max",
                             default = 100,
+                            config = "Halo_Equipment.txt",
                             desc = "The maximum resource for this equipment.",
                         },
                         ["Resource Regen"] = {

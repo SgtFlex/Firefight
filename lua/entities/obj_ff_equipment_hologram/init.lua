@@ -1,8 +1,6 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-
 include("shared.lua")
-include("entities/bases/obj_ff_equipment_base/init.lua")
+
 ENT.ModelColor = Color(130, 150, 0, 255)
 ENT.toggledOn = false
 ENT.bubble = nil
@@ -13,7 +11,7 @@ ENT.Sound_Idle = "equipment/shared/equipment_loop.wav"
 
 ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
-    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
+    self.BaseClass.ActivateEquipment(self)
     if (IsValid(self.holo)) then 
         timer.Destroy("HoloDespawn"..self.holo:GetCreationID())
         self.holo:Remove() 

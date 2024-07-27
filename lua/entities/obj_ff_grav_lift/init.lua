@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/deployable_base/init.lua")
 
 
 ENT.Model = "models/hr/cov/equipment_grav_lift/equipment_grav_lift.mdl"
@@ -23,14 +21,13 @@ ENT.LoopAnimation = "idle_deployed"
 ENT.LastLiftSound = 0
 ENT.LastActivateTime = 0
 
-local oldConvars = ENT.UseConvars
 function ENT:UseConvars()
-    oldConvars(self)
+    self.BaseClass.UseConvars(self)
     self.LiftPower = GetConVar("h_grav_lift_power"):GetFloat()
 end
 
 function ENT:Think()
-    if (CurTime() > self.activateTime and CurTime() > self.LastActivateTime + self.EffectTickRate) then
+    if (CurTime() > self.ActivateTime and CurTime() > self.LastActivateTime + self.EffectTickRate) then
         self.LastActivateTime = CurTime()
         local tr = util.TraceHull({
             start = self:GetPos(),

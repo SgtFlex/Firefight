@@ -1,4 +1,3 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
@@ -27,10 +26,10 @@ ENT.ExplosionRadius = 300
 ENT.Skin = nil
 ENT.Bodygroups = nil
 ENT.DeployAnimation = nil
+ENT.ActivateTime = nil
 
 
 function ENT:Initialize()
-    
     self:UseConvars()
     self:SetModel(self.Model)
     if (self.Skin!=nil) then self:SetSkin(self.Skin) end
@@ -50,7 +49,7 @@ function ENT:Initialize()
         self.loopSound:Play()
         if (self.EffectPFX!=nil) then ParticleEffectAttach(self.EffectPFX, 4, self, 1) end
     end)
-    self.activateTime = CurTime() + self.EffectDelay
+    self.ActivateTime = CurTime() + self.EffectDelay
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     if (self.Duration!=nil and self.Duration > 0) then
         timer.Create("Explode"..self:GetCreationID(), self.Duration, 1, function()
@@ -61,10 +60,11 @@ function ENT:Initialize()
 end
 
 function ENT:UseConvars()
+    if (!self.ConVarName) then return end
     self.StartHealth = GetConVar("h_"..self.ConVarName.."_health"):GetFloat()
     self.EffectRadius = GetConVar("h_"..self.ConVarName.."_effect_radius"):GetFloat()
     self.EffectDelay = GetConVar("h_"..self.ConVarName.."_effect_delay"):GetFloat()
-    self.EffectTickRate = GetConVar("h_"..self.ConVarName.."_effect_tick"):GetFloat()
+    if (GetConVar("h_"..self.ConVarName.."_effect_tick")) then self.EffectTickRate = GetConVar("h_"..self.ConVarName.."_effect_tick"):GetFloat() end
     self.ExplosionDamage = GetConVar("h_"..self.ConVarName.."_expl_damage"):GetFloat()
     self.ExplosionRadius = GetConVar("h_"..self.ConVarName.."_expl_radius"):GetFloat()
 end
@@ -93,13 +93,11 @@ function ENT:Expire()
 end
 
 function ENT:OnRemove()
-    if (self.Snd_IdleLoop!=nil) then
-        self.loopSound:Stop()
-    end
+    if (self.loopSound) then self.loopSound:Stop() end
 end
 
 function ENT:Think()
-    if (CurTime() > self.activateTime) then
+    if (self.ActivateTime and CurTime() > self.ActivateTime) then
         for k, v in pairs(ents.FindInSphere(self:GetPos(), self.EffectRadius)) do
             if v:IsNPC() or v:IsPlayer() then
                 self:EntityEffect(v)
@@ -131,5 +129,5 @@ function ENT:PhysicsCollide(colData, collider)
     local colForce = math.abs((((colData.OurOldVelocity:Dot(colData.HitNormal))*(colData.OurOldVelocity:Length()))/100000))
     self:TakeDamage(math.floor(colForce))
     self:EmitSound(self.SndTbl_Collide[math.random(1, #self.SndTbl_Collide)], 75, math.random(75, 140), colForce/1)
-    print(colForce)
+    --print(colForce)
 end

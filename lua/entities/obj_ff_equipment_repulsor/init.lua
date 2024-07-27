@@ -1,7 +1,5 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
-include("entities/bases/obj_ff_equipment_base/init.lua")
 
 ENT.Model = "models/hr/unsc/equipment/equipment.mdl"
 ENT.ModelColor = Color(0, 150, 150, 255)
@@ -12,9 +10,8 @@ ENT.ResourceMax = 3
 ENT.ResourceCur = ENT.ResourceMax
 ENT.Strength = 2000
 
-ENT.oldActivate = ENT.ActivateEquipment
 function ENT:ActivateEquipment()
-    if self.oldActivate(self)==false then return end --run the old function and check if it ran successfully
+    self.BaseClass.ActivateEquipment(self)
     self:EmitSound("equipment/trip_mine/tripmine_explosion/tripmine_explosion1.wav")
     if (!self:GetOwner():IsOnGround()) then
         self:GetOwner():SetVelocity(self:GetOwner():GetAimVector():GetNormalized()*-750)

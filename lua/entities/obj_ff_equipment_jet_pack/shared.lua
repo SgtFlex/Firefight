@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "obj_ff_equipment_base"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
@@ -8,3 +8,4 @@ ENT.Instructions = "Press the activate key to activate Jetpack. Release to deact
 ENT.Spawnable = true
 ENT.PrintName = "Jet Pack Equipment"
 ENT.ConVarName = "jet_pack"
+ENT.IconMat = Material( "icons/jetpack" )

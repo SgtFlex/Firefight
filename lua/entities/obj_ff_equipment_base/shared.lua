@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+ENT.Base = "base_entity"
 ENT.Category = "Halo Equipment"
 ENT.Author = "Sgt Flexxx"
 ENT.Contact = "https://steamcommunity.com/id/sgtflexxx/"
@@ -7,22 +7,15 @@ ENT.Purpose = "To debug the equipment system"
 ENT.Instructions = ""
 ENT.Spawnable = true
 ENT.PrintName = "Base Equipment"
+ENT.AutomaticFrameAdvance = true
+ENT.RenderGroup = RENDERGROUP_BOTH
+
+ENT.ConVarName = nil
+
+ENT.IconMat = nil
+ENT.HasHoveringIcon = false
 
 if SERVER then
-    function ENT:UseConvars()
-        self.ResourceMax = GetConVar("h_"..self.ConVarName.."_resource_max"):GetFloat()
-        self.ResourceCur = self.ResourceMax
-        self.ResourceRegen = GetConVar("h_"..self.ConVarName.."_resource_regen"):GetFloat()
-        self.ResourceCostPerSec = GetConVar("h_"..self.ConVarName.."_resource_cps"):GetFloat()
-        self.ResourceCostInitial = GetConVar("h_"..self.ConVarName.."_resource_cost_initial"):GetFloat()
-        self.ResourceRegenDelay = GetConVar("h_"..self.ConVarName.."_resource_delay"):GetFloat()
-        self.ResourceTickRate = 0.1
-
-        self.DeployableDuration = GetConVar("h_"..self.ConVarName.."_duration"):GetFloat()
-        self.DeployableHealth = GetConVar("h_"..self.ConVarName.."_health"):GetFloat()
-        
-    end
-
     function ENT:AttachToPlayer(player)
         self.owner = player
         self:SetOwner(player)
@@ -92,6 +85,59 @@ function ENT:DeactivateEquipment()
     end)
 end
 
-
+if CLIENT then
+    function ENT:DrawIcon(pos, ang, scale, icon)
+        if (self.IconMat == nil) then return end  
+        local angle = (LocalPlayer():EyePos() - self:GetPos()):GetNormalized():Angle()
+        angle:RotateAroundAxis( angle:Up(), 90 )
+        angle:RotateAroundAxis( angle:Forward(), 90 )
+        cam.Start3D2D( self:GetAttachment(self:LookupAttachment("holo_icon"))["Pos"] + self:GetUp()*2, angle, 1)
+            -- Actually draw the text. Customize this to your liking.
+            surface.SetMaterial(self.IconMat)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRectRotated(0, 0, 32, 32, 0)
+        cam.End3D2D()
+    end
+    
+    function ENT:Draw()
+        self:DrawModel()    
+        self:DrawIcon()
+    end
+    
+    local EquipmentPanel = {}
+    local pos = {x = ScrW()*.1, y = ScrH()*.85}
+    local size = {w = ScrW()*.1, h = ScrH()*.1}
+    local bar = Material( "models/wireframe" )
+    
+    function EquipmentPanel:Init()    
+        self:SetPos(pos.x, pos.y)
+        self:SetSize(size.w, size.h)
+    end
+    
+    function EquipmentPanel:Paint( width, height )
+        pos.x = ScrW()*.1
+        pos.y = ScrH()*.85
+        size.w = width
+        size.h = height
+        self:SetPos(pos.x, pos.y)
+        self:SetSize(size.w, size.h)
+    
+        surface.SetDrawColor(255, 255, 255, 255)
+        surface.SetMaterial(bar)
+        surface.DrawTexturedRect(size.w*.05 + 4, size.h*.5, 128, 24)
+    
+        surface.SetDrawColor(0, 200, 255, 255)
+        surface.SetMaterial(bar)
+        surface.DrawTexturedRect(size.w*.05 + 4, size.h*.5, 128*0.75, 24)
+    end
+    
+    vgui.Register( "EquipmentPanel", EquipmentPanel, "Panel" )
+    
+    
+    net.Receive("AddEquipmentIcon", function()
+        print("Added the equipment icon")
+        EquipmentPanel = vgui.Create("EquipmentPanel", parentpanel)
+    end)
+end
 
 

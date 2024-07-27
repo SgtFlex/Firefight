@@ -1,6 +1,4 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
-
-ENT.PrintName = "Weapon Box"
-
+ENT.Base = "base_entity"
+ENT.PrintName = "UNSC Weapon Box"
 ENT.Spawnable = true

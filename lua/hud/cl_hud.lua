@@ -7,6 +7,7 @@ local ply = LocalPlayer()
 --random coordinates all over the screen hoping everything lines up (which it won't on different resolutions)
 
 hook.Add("HUDPaint", "DrawMapName", function()
+    
     if (curSet==nil or maxSet==nil) then maxSet = -1 curSet = -1 return end
     surface.SetFont("ChatFont")
     surface.SetTextPos( ScrW()*.1, ScrH()*.93 ) 
